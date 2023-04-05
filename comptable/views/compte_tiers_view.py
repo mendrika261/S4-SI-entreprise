@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
@@ -98,3 +99,9 @@ def read(request):
     context = {nom_simple+'s': CompteTiers.objects.all()}
     # FIN
     return render(request, list_template, context)
+
+
+def compte_tiers_ajax(request, compte_general_id):
+    compte_tiers = list(CompteTiers.objects.values('id', 'code', 'intitule')
+                        .filter(compte_general_id=compte_general_id))
+    return JsonResponse(compte_tiers, safe=False)

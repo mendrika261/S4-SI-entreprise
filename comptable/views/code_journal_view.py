@@ -3,11 +3,11 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-from comptable.models import CodeJournal
+from comptable.models import Journal
 
-nom_simple = 'code_journal'
-nom_avec_article = 'un code journal'
-nom_avec_article_def = 'le code journal'
+nom_simple = 'journal'
+nom_avec_article = 'un journal'
+nom_avec_article_def = 'le journal'
 
 template_form = 'code_journal/form.html'
 list_template = 'code_journal/list.html'
@@ -23,12 +23,14 @@ def create(request):
     if request.method == 'POST':
         try:
             # DEBUT TODO
-            CodeJournal.create(request.POST['code'], request.POST['intitule'])
+            Journal.create(request.POST['code'], request.POST['nom'], request.POST['icon'], request.POST['color'])
             # FIN
             context['success'] = [nom_avec_article_def + ' a été créé avec succès']
         except ValidationError as e:
             context['code'] = request.POST['code']
-            context['intitule'] = request.POST['intitule']
+            context['nom'] = request.POST['nom']
+            context['icon'] = request.POST['icon']
+            context['color'] = request.POST['color']
             context['errors'] = e.messages
     return render(request, template_form, context)
 
@@ -36,10 +38,12 @@ def create(request):
 @login_required
 def update(request, id_object):
     # DEBUT TODO
-    object_i = get_object_or_404(CodeJournal, pk=id_object)
+    object_i = get_object_or_404(Journal, pk=id_object)
     context = {
         'code': object_i.get_code(),
-        'intitule': object_i.get_intitule()
+        'nom': object_i.get_nom(),
+        'icon': object_i.get_icon(),
+        'color': object_i.get_color(),
     }
     # FIN TODO
     if request.GET.get('remove') is not None:
@@ -63,9 +67,11 @@ def update(request, id_object):
             # DEBUT TODO
             context.update({
                 'code': request.POST['code'],
-                'intitule': request.POST['intitule']
+                'nom': request.POST['nom'],
+                'icon': request.POST['icon'],
+                'color': request.POST['color'],
             })
-            object_i.update(request.POST['code'], request.POST['intitule'])
+            object_i.update(request.POST['code'], request.POST['nom'], request.POST['icon'], request.POST['color'])
             # FIN
             context['success'] = [nom_avec_article_def + ' a été modifié avec succès']
         except ValidationError as e:
@@ -79,7 +85,7 @@ def remove(request, id_object):
         return redirect('list_' + nom_simple)
     context = {}
     # DEBUT TODO
-    object_i = get_object_or_404(CodeJournal, pk=id_object)
+    object_i = get_object_or_404(Journal, pk=id_object)
     # FIN
     object_i.remove()
     context['success'] = [nom_avec_article_def + ' a été supprimé avec succès']
@@ -89,6 +95,6 @@ def remove(request, id_object):
 @login_required
 def read(request):
     # DEBUT TODO
-    context = {nom_simple+'s': CodeJournal.objects.all()}
+    context = {nom_simple+'s': Journal.objects.all()}
     # FIN
     return render(request, list_template, context)

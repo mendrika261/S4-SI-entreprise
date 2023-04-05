@@ -13,7 +13,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Code journal</a></li>
+              <li class="breadcrumb-item"><a href="#">Journal</a></li>
               <li class="breadcrumb-item active">{{ action|capfirst }}</li>
             </ol>
           </div>
@@ -49,10 +49,22 @@
                                          minlength="2" maxlength="2" required>
                               </div>
                               <div class="form-group">
-                                  <label for="intitule">Intitulé</label>
-                                  <input type="text" id="intitule" class="form-control" name="intitule" placeholder="ex: Achat"
-                                         value="{{ intitule }}" {% if remove %}disabled{% endif %}
+                                  <label for="nom">Nom</label>
+                                  <input type="text" id="nom" class="form-control" name="nom" placeholder="ex: Achat"
+                                         value="{{ nom }}" {% if remove %}disabled{% endif %}
                                          minlength="3" maxlength="100" required>
+                              </div>
+                              <div class="form-group">
+                                  <label for="color">Coleur</label>
+                                  <input type="text" id="color" class="form-control" name="color"
+                                         value="secondary" {% if remove %}disabled{% endif %}
+                                         minlength="3" maxlength="100">
+                              </div>
+                              <div class="form-group">
+                                  <label for="icon">Icon</label>
+                                  <input type="text" id="icon" class="form-control" name="icon" placeholder="ex: fas fa-question-mark"
+                                         value="fas fa-question-circle" {% if remove %}disabled{% endif %}
+                                         minlength="3" maxlength="100">
                               </div>
 
                               <div class="form-group d-flex justify-content-center">

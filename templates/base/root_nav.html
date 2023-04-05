@@ -59,7 +59,7 @@
           {% for elem in menu %}
           <li class="nav-item">
             <a href="/{{ elem.url }}"
-               class="nav-root nav-link {% if request.path|slice:'1:' == sub_elem.url %}active{% endif %}">
+               class="nav-root nav-link {% if request.path|slice:'1:' == elem.url %}active{% endif %}">
               <i class="nav-icon {{ elem.icon }}"></i>
               <p>
                   {{ elem.name }}

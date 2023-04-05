@@ -10,12 +10,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Liste des codes journal</h1>
+            <h1>Liste des journals</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Journal</a></li>
-              <li class="breadcrumb-item active">Tous les codes journal</li>
+              <li class="breadcrumb-item active">Tous les journals</li>
             </ol>
           </div>
         </div>
@@ -31,7 +31,7 @@
                 <div class="card">
                   <div class="card-header">
                       <a class="btn btn-outline-success" href="{% url 'create_code_journal' %}">
-                          Ajouter un code journal <i class="fas fa-plus"></i>
+                          Ajouter un journal <i class="fas fa-plus"></i>
                       </a>
                       <button class="btn btn-outline-info">
                           Importer .csv <i class="fas fa-file-import"></i>
@@ -43,22 +43,22 @@
                       <thead>
                           <tr>
                               <th>Code journal</th>
-                              <th>Intitulé</th>
+                              <th>Nom</th>
                               <th>Actions</th>
                           </tr>
                       </thead>
                       <tbody>
-                      {% for code_journal in code_journals %}
+                      {% for journal in journals %}
                           <tr>
-                            <td>{{ code_journal.code }}</td>
-                            <td>{{ code_journal.intitule }}</td>
+                            <td>{{ journal.code }}</td>
+                            <td>{{ journal.nom }}</td>
                             <td>
                                 <a class="btn btn-warning"
-                                   href="{% url 'update_code_journal' id_object=code_journal.id %}">
+                                   href="{% url 'update_code_journal' id_object=journal.id %}">
                                     <i class="far fa-pencil-alt"></i>
                                 </a>
                                 <a class="btn btn-danger"
-                                    href="{% url 'update_code_journal' id_object=code_journal.id %}?remove">
+                                    href="{% url 'update_code_journal' id_object=journal.id %}?remove">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
                             </td>
@@ -68,7 +68,7 @@
                       <tfoot>
                           <tr>
                               <th>Code journal</th>
-                              <th>Intitulé</th>
+                              <th>Nom</th>
                               <th>Actions</th>
                           </tr>
                       </tfoot>
@@ -99,9 +99,6 @@
       "autoWidth": false,
       "responsive": true,
       "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
-      "language": {
-        "url": '{% static 'plugins/datatables/fr.json' %}',
-      },
     }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
   });
 </script>

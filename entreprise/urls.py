@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 from comptable.views import user_view
-from comptable.views.global_view import custom_404_view
+from comptable.views import global_view
 from entreprise import settings
 
 urlpatterns = [
@@ -30,4 +30,4 @@ urlpatterns = [
     path('deconnexion', user_view.logout_view, name='logout'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-handler404 = custom_404_view
+handler404 = global_view.custom_404_view
