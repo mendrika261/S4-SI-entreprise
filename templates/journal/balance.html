@@ -1,4 +1,5 @@
 {% extends 'base/root_nav.html' %}
+{% load humanize %}
 {% load static %}
 
 {% block content %}
@@ -31,7 +32,7 @@
                                                class="form-control float-right date_range_picker" required>
                                         <div class="input-group-append">
                                           <button class=" btn btn-info" type="submit">
-                                            <i class="far fa-search"></i>
+                                            <i class="fas fa-search"></i>
                                           </button>
                                         </div>
                                       </div>
@@ -64,10 +65,10 @@
                         <tr>
                             <td>{{ ligne.compte.code }}</td>
                             <td>{{ ligne.compte.intitule }}</td>
-                            <td>{{ ligne.somme_debit }}</td>
-                            <td>{{ ligne.somme_credit }}</td>
-                            <td>{% if ligne.solde_debit != 0 %}{{ ligne.solde_debit }}{% endif %}</td>
-                            <td>{% if ligne.solde_credit != 0 %}{{ ligne.solde_credit }}{% endif %}</td>
+                            <td>{{ ligne.somme_debit|intcomma }}</td>
+                            <td>{{ ligne.somme_credit|intcomma }}</td>
+                            <td>{% if ligne.solde_debit > 0 %}{{ ligne.solde_debit|intcomma }}{% endif %}</td>
+                            <td>{% if ligne.solde_credit > 0 %}{{ ligne.solde_credit|intcomma }}{% endif %}</td>
                         </tr>
                       {% endfor %}
                       </tbody>
@@ -96,6 +97,7 @@
 <script>
   $(function () {
     $("#list").DataTable({
+      "language": get_datatable_lang(),
       "columnDefs": [
           { "targets": -1, "orderable": false, "searchable": false },
           { type: 'date', targets: 0 },

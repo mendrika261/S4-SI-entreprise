@@ -1,17 +1,16 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
-from comptable.models import CompteTiers, CompteGeneral
+from comptable.models import DeviseEquivalente, Devise
 
-nom_simple = 'compte_tiers'
-nom_avec_article = 'un compte tiers'
-nom_avec_article_def = 'le compte tiers'
+nom_simple = 'devise_equivalente'
+nom_avec_article = 'une devise equivalente'
+nom_avec_article_def = 'la devise equivalente'
 
-template_form = 'compte_tiers/form.html'
-list_template = 'compte_tiers/list.html'
+template_form = 'devise_equivalente/form.html'
+list_template = 'devise_equivalente/list.html'
 
 
 @login_required
@@ -21,18 +20,18 @@ def create(request):
         'action': 'Ajouter',
         'icon': 'fas fa-save',
         'color': 'success',
-        'compte_generals': CompteGeneral.objects.order_by('code'),
+        'devises': Devise.objects.order_by('code'),
     }
     if request.method == 'POST':
         try:
             # DEBUT TODO
-            CompteTiers.create(request.POST['compte_general'], request.POST['code'], request.POST['intitule'])
+            DeviseEquivalente.create(request.POST['devise'], request.POST['devise_equivalente'], request.POST['taux'])
             # FIN
             context['success'] = [nom_avec_article_def + ' a été créé avec succès']
         except ValidationError as e:
-            context['compte_general'] = request.POST['compte_general']
-            context['code'] = request.POST['code']
-            context['intitule'] = request.POST['intitule']
+            context['devise'] = request.POST['devise']
+            context['devise_equivalente'] = request.POST['devise_equivalente']
+            context['taux'] = request.POST['taux']
             context['errors'] = e.messages
     return render(request, template_form, context)
 
@@ -40,19 +39,20 @@ def create(request):
 @login_required
 def update(request, id_object):
     # DEBUT TODO
-    object_i = get_object_or_404(CompteTiers, pk=id_object)
+    object_i = get_object_or_404(DeviseEquivalente, pk=id_object)
     context = {
-        'compte_general': object_i.compte_general.id,
-        'code': object_i.code,
-        'intitule': object_i.intitule,
-        'compte_generals': CompteGeneral.objects.order_by('code'),
+        'devise': object_i.devise.id,
+        'devise_equivalente': object_i.devise_equivalente.id,
+        'taux': object_i.taux,
+        'date': object_i.date,
+        'devises': Devise.objects.order_by('nom'),
     }
     # FIN TODO
     if request.GET.get('remove') is not None:
         context.update({
             'title': 'Supprimer ' + nom_avec_article,
             'action': 'Confirmer la suppression',
-            'form_action': "action='" + reverse('remove_'+nom_simple, args=[id_object]) + "'",
+            'form_action': "action='" + reverse('remove_' + nom_simple, args=[id_object]) + "'",
             'remove': True,
             'icon': 'fas fa-trash-alt',
             'color': 'danger',
@@ -68,11 +68,11 @@ def update(request, id_object):
         try:
             # DEBUT TODO
             context.update({
-                'compte_general': request.POST['compte_general'],
-                'code': request.POST['code'],
-                'intitule': request.POST['intitule']
+                'devise': int(request.POST['devise']),
+                'devise_equivalente': int(request.POST['devise_equivalente']),
+                'taux': request.POST['taux'],
             })
-            object_i.update(request.POST['compte_general'], request.POST['code'], request.POST['intitule'])
+            object_i.update(request.POST['devise'], request.POST['devise_equivalente'], request.POST['taux'])
             # FIN
             context['success'] = [nom_avec_article_def + ' a été modifié avec succès']
         except ValidationError as e:
@@ -85,8 +85,9 @@ def remove(request, id_object):
     if request.method != 'POST':
         return redirect('list_' + nom_simple)
     context = {}
+
     # DEBUT TODO
-    object_i = get_object_or_404(CompteTiers, pk=id_object)
+    object_i = get_object_or_404(DeviseEquivalente, pk=id_object)
     # FIN
     object_i.remove()
     context['success'] = [nom_avec_article_def + ' a été supprimé avec succès']
@@ -96,12 +97,6 @@ def remove(request, id_object):
 @login_required
 def read(request):
     # DEBUT TODO
-    context = {nom_simple+'s': CompteTiers.objects.all()}
+    context = {nom_simple + 's': DeviseEquivalente.objects.all()}
     # FIN
     return render(request, list_template, context)
-
-
-def compte_tiers_ajax(request, compte_general_id):
-    compte_tiers = list(CompteTiers.objects.values('id', 'code', 'intitule')
-                        .filter(compte_general_id=compte_general_id))
-    return JsonResponse(compte_tiers, safe=False)

@@ -8,3 +8,4 @@ from .ecriture_journal import EcritureJournal
 from .journal import Journal
 from .menu import Menu
 from .piece import Piece
+from .exercice import Exercice

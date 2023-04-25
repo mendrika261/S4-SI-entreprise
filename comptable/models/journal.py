@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
-from django.db import models
+from django.db import models, IntegrityError
 
 
 class Journal(models.Model):
@@ -10,47 +10,37 @@ class Journal(models.Model):
     nom = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.code + " " + self.nom
+        return self.code + " - " + self.nom
 
-    # getters and setters
-    def get_code(self):
-        return self.code
+    # Setters
 
     def set_code(self, code):
-        if len(code) != 2:
-            raise ValidationError("Le code doit être composé de 2 caractères")
+        if code != '' and code is not None and len(str(code)) != 2:
+            raise ValidationError("Le code du journal doit être composé de 2 caractères")
         self.code = code
 
-    def get_nom(self):
-        return self.nom
-
     def set_nom(self, nom):
-        if len(nom) == 0:
+        if nom == '' or nom is None:
             raise ValidationError("Le nom ne peut être vide")
-        if len(nom) > 100:
+        if len(str(nom)) > 100:
             raise ValidationError("Le nom ne peut pas dépasser 100 caractères")
         self.nom = nom
 
-    def get_icon(self):
-        return self.icon
-
     def set_icon(self, icon):
-        if len(icon) == 0:
+        if icon == '' or icon is None:
             raise ValidationError("L'icône ne peut être vide")
-        if len(icon) > 100:
+        if len(str(icon)) > 100:
             raise ValidationError("L'icône ne peut pas dépasser 100 caractères")
         self.icon = icon
 
-    def get_color(self):
-        return self.color
-
     def set_color(self, color):
-        if len(color) == 0:
+        if color == '' or color is None:
             raise ValidationError("La couleur ne peut être vide")
-        if len(color) > 100:
+        if len(str(color)) > 100:
             raise ValidationError("La couleur ne peut pas dépasser 100 caractères")
         self.color = color
 
+    # Methods
     @staticmethod
     def create(code, nom, icon=None, color=None):
         journal = Journal()
@@ -60,7 +50,10 @@ class Journal(models.Model):
             journal.set_icon(icon)
         if color is not None:
             journal.set_color(color)
-        journal.save()
+        try:
+            journal.save()
+        except IntegrityError:
+            raise ValidationError("Le code du journal existe déjà")
         return journal
 
     def update(self, code, nom, icon=None, color=None):
@@ -70,7 +63,10 @@ class Journal(models.Model):
             self.set_icon(icon)
         if color is not None:
             self.set_color(color)
-        self.save()
+        try:
+            self.save()
+        except IntegrityError:
+            raise ValidationError("Le code du journal existe déjà")
         return self
 
     def remove(self):

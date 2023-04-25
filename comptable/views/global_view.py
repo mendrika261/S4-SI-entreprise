@@ -15,7 +15,6 @@ def global_view(request):
         'theme_accent': 'info',
         'request_method': request.method,
     }
-    print(Menu.get_menu())
     return context
 
 

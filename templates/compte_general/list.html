@@ -33,7 +33,7 @@
                       <a class="btn btn-outline-success" href="{% url 'create_compte_general' %}">
                           Ajouter un compte général <i class="fas fa-plus"></i>
                       </a>
-                      <button class="btn btn-outline-info">
+                      <button class="btn btn-outline-info" data-toggle="modal" data-target="#import_csv">
                           Importer .csv <i class="fas fa-file-import"></i>
                       </button>
                   </div>
@@ -55,7 +55,7 @@
                             <td>
                                 <a class="btn btn-warning"
                                    href="{% url 'update_compte_general' id_object=compte_general.id %}">
-                                    <i class="far fa-pencil-alt"></i>
+                                    <i class="fas fa-pencil-alt"></i>
                                 </a>
                                 <a class="btn btn-danger"
                                     href="{% url 'update_compte_general' id_object=compte_general.id %}?remove">
@@ -84,13 +84,52 @@
     <!-- /.content -->
   </div>
     <!-- /.content-wrapper -->
+
+    <div class="modal fade" id="import_csv" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Importation des comptes générals</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="import-button">
+                    <span aria-hidden="true">×</span>
+                    </button>
+                    </div>
+                <div class="modal-body">
+                    <div class="callout callout-info">
+                      <h5><i class="fas fa-info"></i> Note:</h5>
+                        Le fichier .csv doit avoir les colonnes suivantes: code;intitulé
+                    </div>
+                    <form method="post" enctype="multipart/form-data" action="{% url 'import_csv_compte_general' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="file">Sélectionner un fichier</label>
+                            <input type="file" class="form-control" placeholder="Importer .csv" name="file" id="file">
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="header" id="header">
+                            <label for="header">En tête sur la première ligne</label>
+                        </div>
+                        <div class="form-group d-flex justify-content-center">
+                            <button type="submit" class="btn btn-success mr-5">
+                                    Importer <i class="fas fa-file-import"></i>
+                            </button>
+                       </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block javascript %}
 <script>
   $(function () {
     $("#list").DataTable({
-      "columnDefs": [{ "targets": -1, "orderable": false, "searchable": false }],
+      "language": get_datatable_lang(),
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+      "columnDefs": [
+          { "targets": -1, "orderable": false, "searchable": false },
+      ],
       "paging": true,
       "lengthChange": true,
       "searching": true,
@@ -98,7 +137,6 @@
       "info": true,
       "autoWidth": false,
       "responsive": true,
-      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
     }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
   });
 </script>

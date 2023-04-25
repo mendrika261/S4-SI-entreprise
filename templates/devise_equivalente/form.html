@@ -1,4 +1,5 @@
 {% extends 'base/root_nav.html' %}
+{% load humanize %}
 
 {% block content %}
     <!-- Content Wrapper. Contains page content -->
@@ -13,7 +14,7 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Journal</a></li>
+              <li class="breadcrumb-item"><a href="#">Plan comptable</a></li>
               <li class="breadcrumb-item active">{{ action|capfirst }}</li>
             </ol>
           </div>
@@ -27,15 +28,9 @@
         <!-- Main row -->
         <div class="row">
             <div class="col-12">
-                {% if remove %}
-                <div class="callout callout-danger">
-                  <h5><i class="fas fa-info"></i> Attention:</h5>
-                  La suppression d'un journal entraîne la suppression de toutes les opérations liées à ce journal.
-                </div>
-                {% endif %}
                 <div class="card">
                   <div class="card-header">
-                      <a class="btn btn-outline-secondary" href="{% url 'list_code_journal' %}">
+                      <a class="btn btn-outline-secondary" href="{% url 'list_devise_equivalente' %}">
                           Afficher la liste <i class="fas fa-list-alt"></i>
                       </a>
                       <button class="btn btn-outline-info">
@@ -49,28 +44,39 @@
                               {% csrf_token %}
 
                               <div class="form-group">
-                                  <label for="code">Code</label>
-                                  <input type="text" id="code" class="form-control" name="code" placeholder="ex: AC"
-                                         value="{{ code }}" {% if remove %}disabled{% endif %}
-                                         minlength="2" maxlength="2" required>
+                                  <label for="devise">Devise</label>
+                                  <select name="devise" id="devise" class="select2bs4"
+                                          data-placeholder='Choisir une devise' style="width:100%;"
+                                          {% if remove %}disabled{% endif %} required>
+                                        {% for devise1 in devises %}
+                                            {% if devise and devise == devise1.id %}
+                                                <option value="{{ devise1.id }}" selected>{{ devise1.nom }}</option>
+                                            {% else %}
+                                                <option value="{{ devise1.id }}">{{ devise1 }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                  </select>
+                              </div>
+
+                            <div class="form-group">
+                                  <label for="devise_equivalente">Devise equivalente</label>
+                                  <select name="devise_equivalente" id="devise_equivalente" class="select2bs4"
+                                          data-placeholder='Choisir une devise equivalente' style="width:100%;"
+                                          {% if remove %}disabled{% endif %} required>
+                                          {% for devise2 in devises %}
+                                            {% if devise_equivalente and devise_equivalente == devise2.id %}
+                                                <option value="{{ devise2.id }}" selected>{{ devise2.nom }}</option>
+                                            {% else %}
+                                                <option value="{{ devise2.id }}">{{ devise2 }}</option>
+                                            {% endif %}
+                                          {% endfor %}
+                                  </select>
                               </div>
                               <div class="form-group">
-                                  <label for="nom">Nom</label>
-                                  <input type="text" id="nom" class="form-control" name="nom" placeholder="ex: Achat"
-                                         value="{{ nom }}" {% if remove %}disabled{% endif %}
-                                         minlength="3" maxlength="100" required>
-                              </div>
-                              <div class="form-group">
-                                  <label for="color">Coleur</label>
-                                  <input type="text" id="color" class="form-control" name="color" placeholder="ex: primary"
-                                         value="{{ color_v }}" {% if remove %}disabled{% endif %}
-                                         minlength="3" maxlength="100">
-                              </div>
-                              <div class="form-group">
-                                  <label for="icon">Icon <i class="{{ icon_v }}"></i></label>
-                                  <input type="text" id="icon" class="form-control" name="icon" placeholder="ex: fas fa-question-mark"
-                                         value="{{ icon_v }}" {% if remove %}disabled{% endif %}
-                                         minlength="3" maxlength="100">
+                                  <label for="taux">Taux</label>
+                                  <input type="number" id="taux" class="form-control" name="taux" placeholder="ex: 300.33"
+                                         value="{{ taux|floatformat:'.2f' }}" {% if remove %}disabled{% endif %}
+                                          min="0" required>
                               </div>
 
                               <div class="form-group d-flex justify-content-center">

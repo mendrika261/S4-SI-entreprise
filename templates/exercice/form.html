@@ -27,15 +27,13 @@
         <!-- Main row -->
         <div class="row">
             <div class="col-12">
-                {% if remove %}
                 <div class="callout callout-danger">
-                  <h5><i class="fas fa-info"></i> Attention:</h5>
-                  La suppression d'un journal entraîne la suppression de toutes les opérations liées à ce journal.
+                  <h5><i class="fas fa-warning"></i> Attention:</h5>
+                    La modification ou la suppression de l'exercice peut influencer sur les données liées à cet exercice.
                 </div>
-                {% endif %}
                 <div class="card">
                   <div class="card-header">
-                      <a class="btn btn-outline-secondary" href="{% url 'list_code_journal' %}">
+                      <a class="btn btn-outline-secondary" href="{% url 'list_exercice' %}">
                           Afficher la liste <i class="fas fa-list-alt"></i>
                       </a>
                       <button class="btn btn-outline-info">
@@ -48,29 +46,18 @@
                           <form id="form" method="post" enctype="multipart/form-data" {{ form_action|safe }}>
                               {% csrf_token %}
 
+
                               <div class="form-group">
-                                  <label for="code">Code</label>
-                                  <input type="text" id="code" class="form-control" name="code" placeholder="ex: AC"
-                                         value="{{ code }}" {% if remove %}disabled{% endif %}
-                                         minlength="2" maxlength="2" required>
+                                  <label for="debut">Date début</label>
+                                  <input type="date" id="debut" class="form-control" name="debut" placeholder=""
+                                         value="{{ debut|date:'Y-m-d' }}" {% if remove %}disabled{% endif %}
+                                         required>
                               </div>
                               <div class="form-group">
-                                  <label for="nom">Nom</label>
-                                  <input type="text" id="nom" class="form-control" name="nom" placeholder="ex: Achat"
-                                         value="{{ nom }}" {% if remove %}disabled{% endif %}
-                                         minlength="3" maxlength="100" required>
-                              </div>
-                              <div class="form-group">
-                                  <label for="color">Coleur</label>
-                                  <input type="text" id="color" class="form-control" name="color" placeholder="ex: primary"
-                                         value="{{ color_v }}" {% if remove %}disabled{% endif %}
-                                         minlength="3" maxlength="100">
-                              </div>
-                              <div class="form-group">
-                                  <label for="icon">Icon <i class="{{ icon_v }}"></i></label>
-                                  <input type="text" id="icon" class="form-control" name="icon" placeholder="ex: fas fa-question-mark"
-                                         value="{{ icon_v }}" {% if remove %}disabled{% endif %}
-                                         minlength="3" maxlength="100">
+                                  <label for="fin">Date Fin</label>
+                                  <input type="date" id="fin" class="form-control" name="fin" placeholder=""
+                                         value="{{ fin|date:'Y-m-d' }}" {% if remove %}disabled{% endif %}
+                                         required>
                               </div>
 
                               <div class="form-group d-flex justify-content-center">

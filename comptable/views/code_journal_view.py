@@ -12,6 +12,7 @@ nom_avec_article_def = 'le journal'
 template_form = 'code_journal/form.html'
 list_template = 'code_journal/list.html'
 
+
 @login_required
 def create(request):
     context = {
@@ -29,8 +30,8 @@ def create(request):
         except ValidationError as e:
             context['code'] = request.POST['code']
             context['nom'] = request.POST['nom']
-            context['icon'] = request.POST['icon']
-            context['color'] = request.POST['color']
+            context['icon_v'] = request.POST['icon']
+            context['color_v'] = request.POST['color']
             context['errors'] = e.messages
     return render(request, template_form, context)
 
@@ -40,17 +41,17 @@ def update(request, id_object):
     # DEBUT TODO
     object_i = get_object_or_404(Journal, pk=id_object)
     context = {
-        'code': object_i.get_code(),
-        'nom': object_i.get_nom(),
-        'icon': object_i.get_icon(),
-        'color': object_i.get_color(),
+        'code': object_i.code,
+        'nom': object_i.nom,
+        'icon_v': object_i.icon,
+        'color_v': object_i.color,
     }
     # FIN TODO
     if request.GET.get('remove') is not None:
         context.update({
             'title': 'Supprimer ' + nom_avec_article,
             'action': 'Confirmer la suppression',
-            'form_action': "action='" + reverse('remove_'+nom_simple, args=[id_object]) + "'",
+            'form_action': "action='" + reverse('remove_' + nom_simple, args=[id_object]) + "'",
             'remove': True,
             'icon': 'fas fa-trash-alt',
             'color': 'danger',
@@ -68,8 +69,8 @@ def update(request, id_object):
             context.update({
                 'code': request.POST['code'],
                 'nom': request.POST['nom'],
-                'icon': request.POST['icon'],
-                'color': request.POST['color'],
+                'icon_v': request.POST['icon'],
+                'color_v': request.POST['color'],
             })
             object_i.update(request.POST['code'], request.POST['nom'], request.POST['icon'], request.POST['color'])
             # FIN
@@ -95,6 +96,6 @@ def remove(request, id_object):
 @login_required
 def read(request):
     # DEBUT TODO
-    context = {nom_simple+'s': Journal.objects.all()}
+    context = {nom_simple + 's': Journal.objects.all()}
     # FIN
     return render(request, list_template, context)

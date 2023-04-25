@@ -1,3 +1,5 @@
 from django.contrib import admin
 
-# Register your models here.
+from comptable.models import HistoriqueSociete
+
+admin.site.register(HistoriqueSociete)

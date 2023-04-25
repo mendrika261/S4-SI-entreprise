@@ -1,5 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
+from django.core.files.storage import FileSystemStorage
+from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 
@@ -11,6 +13,7 @@ nom_avec_article_def = 'le compte général'
 
 template_form = 'compte_general/form.html'
 list_template = 'compte_general/list.html'
+
 
 @login_required
 def create(request):
@@ -38,15 +41,15 @@ def update(request, id_object):
     # DEBUT TODO
     object_i = get_object_or_404(CompteGeneral, pk=id_object)
     context = {
-        'code': object_i.get_code(),
-        'intitule': object_i.get_intitule()
+        'code': object_i.code,
+        'intitule': object_i.intitule
     }
     # FIN TODO
     if request.GET.get('remove') is not None:
         context.update({
             'title': 'Supprimer ' + nom_avec_article,
             'action': 'Confirmer la suppression',
-            'form_action': "action='" + reverse('remove_'+nom_simple, args=[id_object]) + "'",
+            'form_action': "action='" + reverse('remove_' + nom_simple, args=[id_object]) + "'",
             'remove': True,
             'icon': 'fas fa-trash-alt',
             'color': 'danger',
@@ -89,6 +92,26 @@ def remove(request, id_object):
 @login_required
 def read(request):
     # DEBUT TODO
-    context = {nom_simple+'s': CompteGeneral.objects.all()}
+    context = {nom_simple + 's': CompteGeneral.objects.all()}
     # FIN
     return render(request, list_template, context)
+
+
+@login_required
+@transaction.atomic
+def import_from_csv(request):
+    if request.method == 'POST':
+        try:
+            uploaded_file = request.FILES['file']
+            fs = FileSystemStorage(location='csv_files/')
+            filename = fs.save(uploaded_file.name, uploaded_file)
+            file_path = fs.path(filename)
+            CompteGeneral.import_from_csv(file_path)
+            context = {'success': ['Les comptes généraux ont été importés avec succès']}
+        except ValidationError as e:
+            context = {'errors': e.messages}
+        except Exception:
+            context = {'errors': ["Le traitement du fichier a échoué! <br> Vérifier que le fichier est un .csv et "
+                                  "l'ordre des colonnes"]}
+        return render(request, list_template, context)
+    return render(request, list_template)

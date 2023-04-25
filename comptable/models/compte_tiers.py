@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, IntegrityError
 
 from . import CompteGeneral
 
@@ -16,42 +16,49 @@ class CompteTiers(models.Model):
         verbose_name = 'Compte tiers'
         verbose_name_plural = 'Comptes tiers'
 
-    # getters and setters
-    def get_code(self):
-        return self.code
+    # Setters
 
     def set_code(self, code):
-        if len(code) == 0:
+        if code == '' and code is None:
             raise ValidationError('Le code ne peut pas être vide')
-        if len(code) > 13:
+        if len(str(code)) > 13:
             raise ValidationError('Le code ne peut pas dépasser 13 caractères')
         self.code = code
 
-    def get_intitule(self):
-        return self.intitule
-
     def set_intitule(self, intitule):
-        if len(intitule) == 0:
+        if intitule == '' and intitule is None:
             raise ValidationError('L\'intitulé ne peut pas être vide')
-        if len(intitule) > 100:
+        if len(str(intitule)) > 100:
             raise ValidationError('L\'intitulé ne peut pas dépasser 100 caractères')
         self.intitule = intitule
 
-        # methods
+    def set_compte_general(self, compte_general_id):
+        try:
+            self.compte_general = CompteGeneral.objects.get(id=compte_general_id)
+        except Exception:
+            raise ValidationError('Le compte général n\'existe pas')
+
+    # Methods
     @staticmethod
     def create(compte_general_id, code, intitule):
         compte_tiers = CompteTiers()
         compte_tiers.compte_general = CompteGeneral.objects.get(id=compte_general_id)
         compte_tiers.set_code(code)
         compte_tiers.set_intitule(intitule)
-        compte_tiers.save()
+        try:
+            compte_tiers.save()
+        except IntegrityError:
+            raise ValidationError('Le compte tiers existe déjà')
         return compte_tiers
 
     def update(self, compte_general_id, code, intitule):
         self.compte_general = CompteGeneral.objects.get(id=compte_general_id)
         self.set_code(code)
         self.set_intitule(intitule)
-        self.save()
+        try:
+            self.save()
+        except IntegrityError:
+            raise ValidationError('Le compte tiers existe déjà')
         return self
 
     def remove(self):

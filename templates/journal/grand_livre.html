@@ -1,4 +1,5 @@
 {% extends 'base/root_nav.html' %}
+{% load humanize %}
 {% load static %}
 
 {% block content %}
@@ -93,8 +94,8 @@
                             <td>{{ ligne.date }}</td>
                             <td>{{ ligne.intitule }}</td>
                             <td>{{ ligne.piece }}</td>
-                            <td>{{ ligne.debit }}</td>
-                            <td>{{ ligne.credit }}</td>
+                            <td>{{ ligne.debit|intcomma }}</td>
+                            <td>{{ ligne.credit|intcomma }}</td>
                             <td>
                                 <a class="btn btn-info" href="{% url 'ecriture_journal' id_piece=ligne.piece.id %}">
                                     <i class="fas fa-info-circle"></i>
@@ -130,6 +131,7 @@
 <script>
   $(function () {
     $("#list").DataTable({
+      "language": get_datatable_lang(),
       "columnDefs": [
           { "targets": -1, "orderable": false, "searchable": false },
           { type: 'date', targets: 0 },

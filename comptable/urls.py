@@ -17,10 +17,35 @@ Including another URLconf
 from django.shortcuts import redirect
 from django.urls import path
 
-from comptable.views import compte_general_view, compte_tiers_view, code_journal_view, journal_view
+from comptable.views import compte_general_view, compte_tiers_view, code_journal_view, journal_view, devise_view, \
+    devise_equivalente_view, piece_view, exercice_view
 
 urlpatterns = [
-    path('', lambda request: redirect('choix_journal')),
+    path('', lambda request: redirect('choix_journal'), name='home'),
+
+    # devise
+    path('devise/ajouter', devise_view.create, name='create_devise'),
+    path('devise/modifier/<int:id_object>', devise_view.update, name='update_devise'),
+    path('devise/supprimer/<int:id_object>', devise_view.remove, name='remove_devise'),
+    path('devise/lister', devise_view.read, name='list_devise'),
+
+    # exercice
+    path('exercice/ajouter', exercice_view.create, name='create_exercice'),
+    path('exercice/modifier/<int:id_object>', exercice_view.update, name='update_exercice'),
+    path('exercice/supprimer/<int:id_object>', exercice_view.remove, name='remove_exercice'),
+    path('exercice/lister', exercice_view.read, name='list_exercice'),
+
+    # devise_equivalente
+    path('devise_equivalente/ajouter', devise_equivalente_view.create, name='create_devise_equivalente'),
+    path('devise_equivalente/modifier/<int:id_object>', devise_equivalente_view.update, name='update_devise_equivalente'),
+    path('devise_equivalente/supprimer/<int:id_object>', devise_equivalente_view.remove, name='remove_devise_equivalente'),
+    path('devise_equivalente/lister', devise_equivalente_view.read, name='list_devise_equivalente'),
+
+    # piece
+    path('piece/ajouter', piece_view.create, name='create_piece'),
+    path('piece/modifier/<int:id_object>', piece_view.update, name='update_piece'),
+    path('piece/supprimer/<int:id_object>', piece_view.remove, name='remove_piece'),
+    path('piece/lister', piece_view.read, name='list_piece'),
 
     # journal
     path('journal/ajouter', code_journal_view.create, name='create_code_journal'),
@@ -33,6 +58,7 @@ urlpatterns = [
     path('compte_general/modifier/<int:id_object>', compte_general_view.update, name='update_compte_general'),
     path('compte_general/supprimer/<int:id_object>', compte_general_view.remove, name='remove_compte_general'),
     path('compte_general/lister', compte_general_view.read, name='list_compte_general'),
+    path('compte_general/importer', compte_general_view.import_from_csv, name='import_csv_compte_general'),
 
     # compte tiers
     path('compte_tiers/ajouter', compte_tiers_view.create, name='create_compte_tiers'),
@@ -44,11 +70,13 @@ urlpatterns = [
     # journal
     path('journal/choix', journal_view.choix_journal, name='choix_journal'),
     path('journal/ecriture/<int:id_journal>', journal_view.add_journal, name='add_journal'),
+    path('journal/ecriture/view/<int:id_piece>', journal_view.view_ecriture, name='ecriture_journal'),
 
     # grand journal
     path('grand_livre/', journal_view.get_grand_livre, name='grand_livre'),
 
+    # balance
     path('balance/', journal_view.get_balance, name='balance'),
 
-    path('journal/ecriture/view/<int:id_piece>', journal_view.view_ecriture, name='ecriture_journal'),
+
 ]

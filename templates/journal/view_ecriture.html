@@ -39,12 +39,13 @@
               <!-- info row -->
               <div class="row invoice-info">
                 <div class="col-sm-4 invoice-col">
-                  <address>
+                  <div>
+                    <strong>Journal:</strong> {{ ecritures.first.journal }}<br>
                     <strong>Date:</strong> {{ date }}<br>
                     <strong>Intitulé:</strong> {{ intitule }}<br>
                     <strong>Pièce:</strong> {{ piece }}<br>
-                    <strong>Tenue de compte:</strong> {{ devise }}<br>
-                  </address>
+                    <strong>Devise tenue de compte:</strong> {{ societe.devise_compte }}<br>
+                  </div>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
@@ -55,14 +56,13 @@
                 <!-- /.col -->
               </div>
               <!-- /.row -->
-
+                <br>
               <!-- Table row -->
               <div class="row">
                 <div class="col-12 table-responsive">
                   <table class="table table-striped">
                     <thead>
                     <tr>
-                      <th>Journal</th>
                       <th>Compte général</th>
                       <th>Compte tiers</th>
                       <th>Debit</th>
@@ -72,7 +72,6 @@
                     <tbody>
                     {% for ecriture in ecritures %}
                     <tr>
-                      <td>{{ ecriture.journal }}</td>
                       <td>{{ ecriture.compte_general }}</td>
                       <td>{{ ecriture.compte_tiers }}</td>
                       <td class="text-right">{{ ecriture.debit }}</td>
