@@ -9,3 +9,4 @@ from .journal import Journal
 from .menu import Menu
 from .piece import Piece
 from .exercice import Exercice
+from .log import Log

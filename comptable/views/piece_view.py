@@ -25,7 +25,7 @@ def create(request):
     if request.method == 'POST':
         try:
             # DEBUT TODO
-            Piece.create(request.POST['prefixe'], request.POST['numero'])
+            Piece.create(request.POST['prefixe'], request.POST['numero'], request.FILES.get('fichier'))
             # FIN
             context['success'] = [nom_avec_article_def + ' a été créé avec succès']
         except ValidationError as e:
@@ -69,7 +69,7 @@ def update(request, id_object):
                 'prefixe': request.POST['prefixe'],
                 'numero': request.POST['numero']
             })
-            object_i.update(request.POST['prefixe'], request.POST['numero'])
+            object_i.update(request.POST['prefixe'], request.POST['numero'], request.FILES.get('fichier'))
             # FIN
             context['success'] = [nom_avec_article_def + ' a été modifié avec succès']
         except ValidationError as e:

@@ -9,7 +9,7 @@ class Piece(models.Model):
     fichier = models.FileField(null=True, default=None, blank=True, upload_to='pieces/')
 
     def __str__(self):
-        return self.prefixe.code + " " + self.numero
+        return str(self.prefixe.code).upper() + "-" + str(self.numero).upper()
 
     # Setters
     def set_prefixe(self, prefixe_id):
@@ -27,19 +27,23 @@ class Piece(models.Model):
 
     # Methods
     @staticmethod
-    def create(prefixe, numero):
+    def create(prefixe, numero, fichier=None):
         piece = Piece()
         piece.set_numero(numero)
         piece.set_prefixe(prefixe)
+        if fichier is not None:
+            piece.fichier = fichier
         try:
             piece.save()
         except IntegrityError:
             raise ValidationError(f'La pièce {piece} existe déjà')
         return piece
 
-    def update(self, prefixe, numero):
+    def update(self, prefixe, numero, fichier=None):
         self.set_prefixe(prefixe)
         self.set_numero(numero)
+        if fichier is not None:
+            self.fichier = fichier
         try:
             self.save()
         except IntegrityError:
