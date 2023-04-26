@@ -10,7 +10,7 @@ class Journal(models.Model):
     nom = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.code + " - " + self.nom
+        return str(self.code).upper() + "-" + self.nom
 
     # Setters
 

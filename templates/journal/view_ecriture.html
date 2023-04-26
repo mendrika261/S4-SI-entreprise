@@ -40,10 +40,11 @@
               <div class="row invoice-info">
                 <div class="col-sm-4 invoice-col">
                   <div>
-                    <strong>Journal:</strong> {{ ecritures.first.journal }}<br>
+                    <strong>Journal:</strong> <span class="badge bg-info">{{ ecritures.first.journal }}</span><br>
                     <strong>Date:</strong> {{ date }}<br>
                     <strong>Intitulé:</strong> {{ intitule }}<br>
-                    <strong>Pièce:</strong> {{ piece }}<br>
+                    <strong>Pièce:</strong> {{ piece }}
+                      <a href="{{ piece.fichier }}"> <i class="fas fa-download"></i> </a> <br>
                     <strong>Devise tenue de compte:</strong> {{ societe.devise_compte }}<br>
                   </div>
                 </div>
@@ -73,7 +74,7 @@
                     {% for ecriture in ecritures %}
                     <tr>
                       <td>{{ ecriture.compte_general }}</td>
-                      <td>{{ ecriture.compte_tiers }}</td>
+                      <td>{% if ecriture.compte_tiers %}{{ ecriture.compte_tiers }}{% endif %}</td>
                       <td class="text-right">{{ ecriture.debit }}</td>
                       <td class="text-right">{{ ecriture.credit }}</td>
                     </tr>

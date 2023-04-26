@@ -18,7 +18,7 @@ from django.shortcuts import redirect
 from django.urls import path
 
 from comptable.views import compte_general_view, compte_tiers_view, code_journal_view, journal_view, devise_view, \
-    devise_equivalente_view, piece_view, exercice_view
+    devise_equivalente_view, piece_view, exercice_view, historique_societe_view
 
 urlpatterns = [
     path('', lambda request: redirect('choix_journal'), name='home'),
@@ -78,5 +78,8 @@ urlpatterns = [
     # balance
     path('balance/', journal_view.get_balance, name='balance'),
 
-
+    # historique
+    path('historique/', historique_societe_view.afficher, name='historique_societe'),
+    path('historique/modifier', historique_societe_view.modification, name='modifier_historique_societe'),
+    path('historique/importer_fichier', historique_societe_view.import_fichier, name='import_fichier_societe'),
 ]
