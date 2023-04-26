@@ -1,0 +1,146 @@
+{% extends 'base/root_nav.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Liste des status entreprise</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Status entreprise</a></li>
+              <li class="breadcrumb-item active">Tous les status de l'entreprise</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      <a class="btn btn-outline-success" href="{% url 'create_status_entreprise' %}">
+                          Ajouter un statut <i class="fas fa-plus"></i>
+                      </a>
+                      <button class="btn btn-outline-info" data-toggle="modal" data-target="#import_csv">
+                          Importer .csv <i class="fas fa-file-import"></i>
+                      </button>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <table id="list" class="table table-bordered table-striped">
+                      <thead>
+                          <tr>
+                              <th>Nom</th>
+                              <th>Sigle</th>
+                              <th>Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                      {% for statut in statuts %}
+                          <tr>
+                            <td>{{ statut.nom }}</td>
+                            <td>{{ statut.sigle }}</td>
+                            <td>
+                                <a class="btn btn-warning"
+                                   href="{% url 'update_status_entreprise' id_object=statut.id %}">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <a class="btn btn-danger"
+                                    href="{% url 'update_status_entreprise' id_object=statut.id %}?remove">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                          </tr>
+                      {% endfor %}
+                      </tbody>
+                      <tfoot>
+                          <tr>
+                              <th>Nom</th>
+                              <th>Sigle</th>
+                              <th>Actions</th>
+                          </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+
+        <div class="modal fade" id="import_csv" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Importation des statuts d'entreprise</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="import-button">
+                    <span aria-hidden="true">×</span>
+                    </button>
+                    </div>
+                <div class="modal-body">
+                    <div class="callout callout-info">
+                      <h5><i class="fas fa-info"></i> Note:</h5>
+                        Le fichier .csv doit avoir les colonnes suivantes: nom;sigle
+                    </div>
+                    <form method="post" enctype="multipart/form-data" action="{% url 'import_csv_status_entreprise' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="file">Sélectionner un fichier</label>
+                            <input type="file" class="form-control" placeholder="Importer .csv" name="file" id="file">
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="header" id="header">
+                            <label for="header">En tête sur la première ligne</label>
+                        </div>
+                        <div class="form-group d-flex justify-content-center">
+                            <button type="submit" class="btn btn-success mr-5">
+                                    Importer <i class="fas fa-file-import"></i>
+                            </button>
+                       </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+  $(function () {
+    $("#list").DataTable({
+      "language": get_datatable_lang(),
+      "columnDefs": [
+          { "targets": -1, "orderable": false, "searchable": false }
+      ],
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
+  });
+</script>
+{% endblock %}
+

@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.core.validators import MinLengthValidator
-from django.db import models, IntegrityError
+from django.db import models, IntegrityError, transaction
 
 
 class Journal(models.Model):
@@ -71,4 +71,23 @@ class Journal(models.Model):
 
     def remove(self):
         self.delete()
+        return 0
+
+    @staticmethod
+    @transaction.atomic
+    def import_from_csv(file, with_header=True):
+        import csv
+        try:
+            with open(file, 'r') as f:
+                reader = csv.reader(f)
+                if with_header:
+                    next(reader)
+                for row in reader:
+                    try:
+                        Journal.create(row[0], row[1],row[2],row[3])
+                    except ValidationError as e:
+                        raise ValidationError("Erreur lors de l'importation à la ligne " + str(row) + " : \n" + str(e))
+        except FileNotFoundError:
+            raise ValidationError("Le traitement du fichier a échoué! <br> Vérifier que le fichier est un .csv et "
+                                  "l'ordre des colonnes")
         return 0
