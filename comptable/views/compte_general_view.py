@@ -106,7 +106,7 @@ def import_from_csv(request):
             fs = FileSystemStorage(location='csv_files/')
             filename = fs.save(uploaded_file.name, uploaded_file)
             file_path = fs.path(filename)
-            CompteGeneral.import_from_csv(file_path)
+            CompteGeneral.import_from_csv(file_path, request.POST.get("header") is not None)
             context = {'success': ['Les comptes généraux ont été importés avec succès']}
         except ValidationError as e:
             context = {'errors': e.messages}
