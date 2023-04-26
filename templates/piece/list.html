@@ -10,12 +10,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Liste des pieces</h1>
+            <h1>Liste des pièces</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="#">Plan comptable</a></li>
-              <li class="breadcrumb-item active">Toutes les pieces</li>
+              <li class="breadcrumb-item active">Toutes les pièces</li>
             </ol>
           </div>
         </div>
@@ -33,17 +33,14 @@
                       <a class="btn btn-outline-success" href="{% url 'create_piece' %}">
                           Ajouter une piece <i class="fas fa-plus"></i>
                       </a>
-                      <button class="btn btn-outline-info">
-                          Importer .csv <i class="fas fa-file-import"></i>
-                      </button>
                   </div>
                   <!-- /.card-header -->
                   <div class="card-body">
                     <table id="list" class="table table-bordered table-striped">
                       <thead>
                           <tr>
-                              <th>Prefixe</th>
-                              <th>Numero</th>
+                              <th>Préfixe</th>
+                              <th>Numéro</th>
                               <th>Actions</th>
                           </tr>
                       </thead>
@@ -51,8 +48,14 @@
                       {% for piece in pieces %}
                           <tr>
                             <td>{{ piece.prefixe.code }}</td>
-                            <td>{{ piece.numero }}</td>
+                            <td>{{ piece.numero }}
+                            </td>
                             <td>
+                                {% if piece.fichier %}
+                                <a href="{% get_media_prefix %}{{ piece.fichier }}" class="btn btn-info">
+                                    <i class="fas fa-download"></i>
+                                </a>
+                                {% endif %}
                                 <a class="btn btn-warning"
                                    href="{% url 'update_piece' id_object=piece.id %}">
                                     <i class="fas fa-pencil-alt"></i>

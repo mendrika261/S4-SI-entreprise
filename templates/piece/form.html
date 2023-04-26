@@ -32,9 +32,6 @@
                       <a class="btn btn-outline-secondary" href="{% url 'list_piece' %}">
                           Afficher la liste <i class="fas fa-list-alt"></i>
                       </a>
-                      <button class="btn btn-outline-info">
-                          Importer .csv <i class="fas fa-file-import"></i>
-                      </button>
                   </div>
                   <!-- /.card-header -->
                   <div class="card-body">
@@ -75,7 +72,12 @@
                                          minlength="3" maxlength="100" required>
                               </div>
 
-                              <div class="form-group d-flex justify-content-center">
+                              <div class="form-group custom-file">
+                                  <label for="fichier" class="custom-file-label">Sélectionner le fichier scan</label>
+                                  <input type="file" id="fichier" class="form-control custom-file-input" name="fichier">
+                              </div>
+
+                              <div class="form-group d-flex justify-content-center mt-2">
                                 <button type="submit" class="btn btn-{{ color }} mr-5">
                                     {{ action|capfirst }}
                                     <i class="{{ icon }}"></i>
@@ -98,6 +100,7 @@
 {% block javascript %}
 <script>
 $(function () {
+    bsCustomFileInput.init();
     $('#form').validate({
         errorElement: 'span',
         errorPlacement: function (error, element) {
