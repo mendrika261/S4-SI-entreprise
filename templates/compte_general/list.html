@@ -101,9 +101,9 @@
                     </div>
                     <form method="post" enctype="multipart/form-data" action="{% url 'import_csv_compte_general' %}">
                         {% csrf_token %}
-                        <div class="form-group">
-                            <label for="file">Sélectionner un fichier</label>
-                            <input type="file" class="form-control" placeholder="Importer .csv" name="file" id="file">
+                        <div class="custom-file">
+                            <label for="file" class="custom-file-label">Sélectionner un fichier</label>
+                            <input type="file" class="custom-file-input" placeholder="Importer .csv" name="file" id="file">
                         </div>
                         <div class="form-group">
                             <input type="checkbox" name="header" id="header">
