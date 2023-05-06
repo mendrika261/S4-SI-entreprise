@@ -1,6 +1,6 @@
 # Get started
 ## 1. Clone this repository
-```git clone```
+```git clone https://github.com/mendrika261/S4-SI-entreprise.git```
 ## 2. Create a virtual environment
 ```python -m venv venv```
 ## 3. Activate the virtual environment
