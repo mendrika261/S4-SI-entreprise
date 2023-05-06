@@ -1,0 +1,94 @@
+{% extends 'base/root_nav.html' %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>{{ title }}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Plan comptable</a></li>
+              <li class="breadcrumb-item active">{{ action|capfirst }}</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      <a class="btn btn-outline-secondary" href="{% url 'list_devise' %}">
+                          Afficher la liste <i class="fas fa-list-alt"></i>
+                      </a>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                          <!-- form start -->
+                          <form id="form" method="post" enctype="multipart/form-data" {{ form_action|safe }}>
+                              {% csrf_token %}
+
+
+                              <div class="form-group">
+                                  <label for="code">Code</label>
+                                  <input type="text" id="code" class="form-control" name="code" placeholder="ex: MGA"
+                                         value="{{ code }}" {% if remove %}disabled{% endif %}
+                                         minlength="3" maxlength="3" required>
+                              </div>
+                              <div class="form-group">
+                                  <label for="nom">Nom</label>
+                                  <input type="text" id="nom" class="form-control" name="nom" placeholder="ex: Ariary"
+                                         value="{{ nom }}" {% if remove %}disabled{% endif %}
+                                         minlength="3" maxlength="100" required>
+                              </div>
+
+                              <div class="form-group d-flex justify-content-center">
+                                <button type="submit" class="btn btn-{{ color }} mr-5">
+                                    {{ action|capfirst }}
+                                    <i class="{{ icon }}"></i>
+                                </button>
+                              </div>
+                          </form>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(function () {
+    $('#form').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+    });
+});
+</script>
+{% endblock %}

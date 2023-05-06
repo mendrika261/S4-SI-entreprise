@@ -1,0 +1,344 @@
+{% extends 'base/root_nav.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Ecriture du journal - {{ journal.nom }}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item">
+                  <a href="#">Journal</a>
+                  <span class="badge badge-info text-sm mb-3 align-text-top">{{ exercice }}</span>
+              </li>
+              <li class="breadcrumb-item active">{{ journal }}</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                <form method="post" id="form">
+                  {% csrf_token %}
+                  <input type="hidden" name="rows" value="1" class="rows">
+                  <div class="card-header">
+                      <a class="btn btn-secondary" href="{% url 'choix_journal' %}">
+                          Choix journal <i class="fas fa-newspaper"></i>
+                      </a>
+                      <button class="btn btn-danger" onclick="delete_all()" type="button">
+                          Tout effacer <i class="fas fa-minus-circle"></i>
+                      </button>
+                      <button class="btn btn-info" onclick="add_new_line()" type="button">
+                          Ajouter une ligne <i class="fas fa-plus-circle"></i>
+                      </button>
+                      <button class="btn btn-success" type="submit">
+                          Enregistrer <i class="fas fa-subscript"></i>
+                      </button>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <table id="list" class="table table-bordered table-striped">
+                      <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Pièce</th>
+                            <th>Compte général</th>
+                            <th width="150">Compte tiers
+                                <a href="{% url 'create_compte_tiers' %}" class="fas fa-plus-circle" target="_blank"
+                                    onclick="toastr.info('Re-sélectionner le compte général après avoir créer un compte tiers!',
+                                    'Information!', {timeOut: 0, extendedTimeOut: 0})"
+                                   title="Ajouter un compte tiers"
+                                ></a>
+                            </th>
+                            <th>Libellé</th>
+                            <th width="150">Devise</th>
+                            <th>Débit</th>
+                            <th>Crédit</th>
+                            <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="list-content">
+                         <tr id="row1">
+                             <td class="form-group">
+                                 <input type="date" class="form-control" name="date[]" required>
+                             </td>
+                             <td class="d-flex">
+                                 <select name="prefixe_piece[]" class="form-control select2bs4 d-inline-block" required>
+                                     {% for prefixe in prefixe_piece %}
+                                     <option value="{{ prefixe.id }}">{{ prefixe.code }}</option>
+                                     {% endfor %}
+                                 </select>
+                                 <input name="numero_piece[]" type="text" class="form-control d-inline-block" required>
+                             </td>
+                             <td class="form-group">
+                                 <select name="compte_general[]" class="form-control select2bs4 compte_general" required
+                                         onchange="set_compte_tiers(this)">
+                                     {% for compte in compte_general %}
+                                     <option value="{{ compte.id }}">{{ compte }}</option>
+                                     {% endfor %}
+                                 </select>
+                             </td>
+                             <td class="form-group">
+                                 <select name="compte_tiers[]" class="form-control select2bs4 compte_tiers">
+                                 </select>
+                             </td>
+                             <td class="form-group">
+                                 <input name="intitule[]" type="text" class="form-control" required>
+                             </td>
+                             <td class="form-group">
+                                 <select name="devise[]" class="form-control select2bs4">
+                                     {% for devise in devises %}
+                                     <option value="{{ devise.id }}">{{ devise }}</option>
+                                     {% endfor %}
+                                 </select>
+                             </td>
+                             <td class="form-group">
+                                 <input name="debit[]" type="number" class="form-control debit" step="0.01" min="0"
+                                        onchange="this.parentElement.parentElement.getElementsByClassName('credit')[0].value=''">
+                             </td>
+                             <td class="form-group">
+                                 <input name="credit[]" type="number" class="form-control credit" step="0.01" min="0"
+                                        onchange="this.parentElement.parentElement.getElementsByClassName('debit')[0].value=''">
+                             </td>
+                             <td class="form-group">
+                                 <button class="btn btn-danger mb-1" onclick="delete_line(this.parentElement.parentElement.id)" type="button">
+                                    <i class="fas fa-minus-circle"></i>
+                                 </button>
+                                 <button class="btn btn-info mb-1" onclick="add_new_line()" type="button">
+                                    <i class="fas fa-plus-circle"></i>
+                                 </button>
+                             </td>
+                         </tr>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                            <th>Date</th>
+                            <th>Pièce</th>
+                            <th>Compte général</th>
+                            <th>Compte tiers
+                                <a href="{% url 'create_compte_tiers' %}" class="fas fa-plus-circle" target="_blank"
+                                    onclick="toastr.info('Re-sélectionner le compte général après avoir créer un compte tiers!',
+                                    'Information!', {timeOut: 0, extendedTimeOut: 0})"
+                                   title="Ajouter un compte tiers"
+                                ></a>
+                            </th>
+                            <th>Libellé</th>
+                            <th>Devise</th>
+                            <th>Débit</th>
+                            <th>Crédit</th>
+                            <th></th>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <div class="card-footer d-flex justify-content-end">
+                      <a class="btn btn-secondary" href="{% url 'choix_journal' %}">
+                          Choix journal <i class="fas fa-newspaper"></i>
+                      </a>
+                      <button class="btn btn-danger ml-1" onclick="delete_all()" type="button">
+                          Tout effacer <i class="fas fa-minus-circle"></i>
+                      </button>
+                      <button class="btn btn-info ml-1" onclick="add_new_line()" type="button">
+                          Ajouter une ligne <i class="fas fa-plus-circle"></i>
+                      </button>
+                      <button class="btn btn-success ml-1" type="submit">
+                          Enregistrer <i class="fas fa-subscript"></i>
+                      </button>
+                  </div>
+                </form>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+    let row_number = 2
+    let rows = [1]
+
+    function destroy_select2() {
+        $('.select2bs4').select2('destroy');
+    }
+
+    function enable_select2() {
+        $('.select2bs4').select2({
+                language: "fr",
+                theme: 'bootstrap4'
+        });
+    }
+
+    function add_new_line() {
+        destroy_select2()
+        let table_content = document.getElementById("list-content")
+        let row = table_content.lastElementChild
+        // Test if the last row is invalid
+        if(row.getElementsByClassName('is-invalid').length !== 0)
+            return toastr.warning("Veuillez remplir correctement la dernière ligne avant d'en ajouter une nouvelle")
+        let clone_row = row.cloneNode(true)
+        clone_row.id = "row" + (row_number)
+        // Auto suggestion debit/credit
+        let debit = get_sum_debit()
+        let credit = get_sum_credit()
+        if(debit > credit) {
+            clone_row.getElementsByClassName("credit")[0].value = debit - credit
+            clone_row.getElementsByClassName("debit")[0].value = ''
+        } else if(credit > debit) {
+            clone_row.getElementsByClassName("debit")[0].value = credit - debit
+            clone_row.getElementsByClassName("credit")[0].value = ''
+        } else {
+            clone_row.getElementsByClassName("debit")[0].value = ''
+            clone_row.getElementsByClassName("credit")[0].value = ''
+        }
+        // Configure every input and select name
+        /*let inputs = clone_row.getElementsByTagName("input")
+        let selects = clone_row.getElementsByTagName("select")
+        for (let i = 0; i < inputs.length; i++) {
+            inputs[i].name = inputs[i].name.split(row_number-1)[0]+row_number
+        }
+        for (let i = 0; i < selects.length; i++) {
+            selects[i].name = selects[i].name.split(row_number-1)[0]+row_number
+        }*/
+        table_content.appendChild(clone_row)
+        rows.push(row_number)
+        row_number++
+        document.getElementById('form').getElementsByClassName('rows')[0].value = rows
+        scrollToElement(clone_row.id)
+
+        enable_select2()
+    }
+
+    function delete_line(row_id) {
+        if(rows.length > 1) {
+            let row = document.getElementById(row_id)
+            let index = rows.indexOf(parseInt(row_id.split('row')[1]))
+            if(index > -1) {
+                rows.splice(index, 1)
+                row.remove()
+            }
+        } else {
+            toastr.error('Vous ne pouvez pas supprimer la dernière ligne!')
+        }
+        document.getElementById('form').getElementsByClassName('rows')[0].value = rows
+    }
+
+    function delete_all() {
+        console.log("avant"+rows)
+        for (let i = rows.length-1; i > 0; i--) {
+            delete_line("row" + rows[i])
+        }
+        console.log("après"+rows)
+    }
+
+    function get_sum_debit() {
+        let sum = 0
+        let debits = document.getElementsByClassName("debit")
+        for (let i = 0; i < debits.length; i++) {
+            sum += Number.isNaN(debits[i].value) || debits[i].value==='' ? 0 : parseFloat(debits[i].value)
+        }
+        return sum
+    }
+
+    function get_sum_credit() {
+        let sum = 0
+        let credits = document.getElementsByClassName("credit")
+        for (let i = 0; i < credits.length; i++) {
+            console.log(credits[i].value)
+            sum += Number.isNaN(credits[i].value) || credits[i].value==='' ? 0 : parseFloat(credits[i].value)
+        }
+        return sum
+    }
+
+    function scrollToElement(id) {
+      let element = document.getElementById(id);
+      element.scrollIntoView({behavior: "smooth"});
+    }
+
+    function submit_form() {
+        if (get_sum_debit() === 0)
+            return toastr.error("Le total des débits ne peut pas être vide")
+        else if (get_sum_credit() === 0)
+            return toastr.error("Le total des crédits ne peut pas être vide")
+        if (Math.abs(get_sum_debit() - get_sum_credit()) > 0)
+            return toastr.error("Le total des débits doit être égal au total des crédits")
+        else {
+            let form = document.getElementById('form')
+            form.submit()
+            return toastr.success("Enregistrement effectué avec succès")
+        }
+    }
+
+    function set_compte_tiers(compte_general) {
+        let compte_tiers = compte_general.parentElement.parentElement.getElementsByClassName('compte_tiers')[0]
+        compte_tiers.innerHTML = '<option value="" selected>Aucun</option>'
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/compte_tiers/json/'+compte_general.value, true);
+        xhr.onload = function () {
+            if (this.status === 200) {
+                let data = JSON.parse(this.responseText);
+                compte_tiers.innerHTML += ''
+                for (let j = 0; j < data.length; j++) {
+                    compte_tiers.innerHTML += '<option value="' + data[j].id + '">' + data[j].code + ' - ' +
+                        data[j].intitule + '</option>'
+                }
+            }
+        }
+        xhr.send();
+        console.log("compte tiers set")
+    }
+</script>
+<script>
+    $(function () {
+        set_compte_tiers(document.getElementById('row1').getElementsByClassName('compte_general')[0]);
+
+      $('#form').validate({
+        submitHandler: function() {
+            submit_form()
+        },
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback end-0');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+      });
+
+      $("#list").DataTable({
+          "language": get_datatable_lang(),
+          "columnDefs": [{ "targets": -1, "orderable": false, "searchable": false }],
+          "responsive": true,
+          "paging": false,
+          "lengthChange": false,
+          "searching": false,
+          "ordering": false,
+          "info": false,
+          "autoWidth": false,
+    }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
+    });
+</script>
+{% endblock %}

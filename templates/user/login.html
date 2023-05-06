@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<title>{{ societe.nom }}</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->	
+	<link rel="icon" type="image/png" href="{% static 'plugins/login/images/icons/favicon.ico' %}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'plugins/login/vendor/bootstrap/css/bootstrap.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'plugins/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'plugins/login/vendor/animate/animate.css' %}">
+<!--===============================================================================================-->	
+	<link rel="stylesheet" type="text/css" href="{% static 'plugins/login/vendor/css-hamburgers/hamburgers.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'plugins/login/vendor/select2/select2.min.css' %}">
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{% static 'plugins/login/css/util.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'plugins/login/css/main.css' %}">
+<!--===============================================================================================-->
+    <!-- Toastr -->
+    <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+</head>
+<body>
+	
+	<div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="{% get_static_prefix %}plugins/login/images/img-01.png" alt="IMG">
+				</div>
+
+				<form class="login100-form validate-form" method="post">
+                    {% csrf_token %}
+					<span class="login100-form-title">
+                        <img src="{% get_media_prefix %}{{ societe.logo }}" alt="Logo societe" width="70"> <br><br>
+						Page de connexion
+					</span>
+
+					<div class="wrap-input100 validate-input" data-validate = "Entrer un nom d'utilisateur valide">
+						<input class="input100" type="text" name="username" placeholder="Nom d'utilisateur"
+                                value="{{ username }}">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-user" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "Le mot de passe doit être renseigné">
+						<input class="input100" type="password" name="password" placeholder="Mot de passe">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+					
+					<div class="container-login100-form-btn">
+						<button class="login100-form-btn" type="submit">
+							Connexion
+						</button>
+					</div>
+
+					<div class="text-center p-t-12">
+						<span class="txt1 text-danger">
+                            {% if errors %}
+                            <i class="fa fa-warning"></i> {{ errors }} <i class="fa fa-warning"></i>
+                            {% endif %}
+						</span>
+					</div>
+
+					<div class="text-center p-t-136">
+						<a class="txt2" href="#">
+						</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	
+
+	
+<!--===============================================================================================-->	
+	<script src="{% static 'plugins/login/vendor/jquery/jquery-3.2.1.min.js' %}"></script>
+<!--===============================================================================================-->
+    <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!--===============================================================================================-->
+	<script src="{% static 'plugins/login/vendor/select2/select2.min.js' %}"></script>
+<!--===============================================================================================-->
+	<script src="{% static 'plugins/login/vendor/tilt/tilt.jquery.min.js' %}"></script>
+	<script >
+		$('.js-tilt').tilt({
+			scale: 1.1
+		})
+	</script>
+<!--===============================================================================================-->
+	<script src="{% static 'plugins/login/js/main.js' %}"></script>
+    <!-- Toastr -->
+    <script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+    <script>
+        {% if success %}
+            {% for s in success %}
+            toastr.success('{{ s }}')
+            {% endfor %}
+        {% endif %}
+    </script>
+
+</body>
+</html>

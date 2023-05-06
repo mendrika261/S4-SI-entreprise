@@ -1,0 +1,93 @@
+{% extends 'base/root.html' %}
+{% load static %}
+
+{% block navbar %}
+<!-- Navbar -->
+<nav class="main-header navbar navbar-expand navbar-{{ theme }}">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}">
+          <i class="fas fa-sign-out-alt"></i>
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+<!-- /.navbar -->
+{% endblock %}
+
+{% block sidebar %}
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-{{ theme }}-{{ theme_color }} elevation-4">
+    <!-- Brand Logo -->
+    <a href="" class="brand-link bg-{{ theme_color }}">
+      <img src="{% get_media_prefix %}{{ societe.logo }}" alt="Logo societe" class="brand-image img-circle elevation-3 bg-white" style="opacity: .8">
+      <span class="brand-text font-weight-light">{{ societe.nom.title }}</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block">Utilisateur actuel</a>
+        </div>
+      </div>
+
+      <!-- Sidebar Menu -->
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar nav-child-indent flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <!-- Add icons to the links using the .nav-icon class
+               with font-awesome or any other icon font library -->
+
+          {% for elem in menu %}
+          <li class="nav-item">
+            <a href="/{{ elem.url }}"
+               class="nav-root nav-link {% if request.path|slice:'1:' == elem.url %}active{% endif %}">
+              <i class="nav-icon {{ elem.icon }}"></i>
+              <p>
+                  {{ elem.name }}
+                  {% if elem.have_sub_menu %}
+                  <i class="right fas fa-angle-left"></i>
+                  {% endif %}
+              </p>
+            </a>
+            {% if elem.have_sub_menu %}
+            <ul class="nav nav-treeview">
+              {% for sub_elem in elem.sub_menu %}
+              <li class="nav-item">
+                <a href="/{{ sub_elem.url }}"
+                   class="nav-link {% if request.path|slice:'1:' == sub_elem.url %}active{% endif %}">
+                  <i class="nav-icon {{ sub_elem.icon }}"></i>
+                  <p>{{ sub_elem.name }}</p>
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </nav>
+      <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>
+
+{% endblock %}

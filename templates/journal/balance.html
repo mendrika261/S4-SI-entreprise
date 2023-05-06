@@ -1,0 +1,117 @@
+{% extends 'base/root_nav.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <br>
+            <h2 class="text-center display-4" style="text-shadow: 5px 5px 10px white;">Balance des comptes</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-10 offset-md-1">
+                        <div class="row">
+                            <div class="col-3">
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <div class="form-group">
+                                      <label>Période: {% if date %}{{ date }}{% else %}date debut - date fin{% endif %}</label>
+                                      <div class="input-group">
+                                        <div class="input-group-prepend">
+                                          <span class="input-group-text">
+                                            <i class="far fa-calendar-alt"></i>
+                                          </span>
+                                        </div>
+                                        <input type="text" name="date"
+                                               value="{% if date %}{{ date }}{% else %}01/01/2023 - 12/31/2023{% endif %}"
+                                               class="form-control float-right date_range_picker" required>
+                                        <div class="input-group-append">
+                                          <button class=" btn btn-info" type="submit">
+                                            <i class="fas fa-search"></i>
+                                          </button>
+                                        </div>
+                                      </div>
+                                      <!-- /.input group -->
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if result is not None %}
+                <div class="row">
+                    <div class="card col-12">
+                        <div class="card-body">
+                            <table id="list" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                          <th>Numéro de compte</th>
+                          <th>Intitulé</th>
+                          <th>Débit</th>
+                          <th>Crédit</th>
+                          <th>Solde Débiteur</th>
+                          <th>Solde Créditeur</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {% for ligne in result %}
+                        <tr>
+                            <td>{{ ligne.compte.code }}</td>
+                            <td>{{ ligne.compte.intitule }}</td>
+                            <td>{{ ligne.somme_debit|intcomma }}</td>
+                            <td>{{ ligne.somme_credit|intcomma }}</td>
+                            <td>{% if ligne.solde_debit > 0 %}{{ ligne.solde_debit|intcomma }}{% endif %}</td>
+                            <td>{% if ligne.solde_credit > 0 %}{{ ligne.solde_credit|intcomma }}{% endif %}</td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                      <tfoot>
+                      <tr>
+                          <th>Numéro de compte</th>
+                          <th>Intitulé</th>
+                          <th>Débit</th>
+                          <th>Crédit</th>
+                          <th>Solde Débiteur</th>
+                          <th>Solde Créditeur</th>
+                      </tr>
+                      </tfoot>
+                    </table>
+                        </div>
+                    </div>
+                </div>
+            `   {% endif %}
+            </form>
+        </div>
+    </section>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+  $(function () {
+    $("#list").DataTable({
+      "language": get_datatable_lang(),
+      "columnDefs": [
+          { "targets": -1, "orderable": false, "searchable": false },
+          { type: 'date', targets: 0 },
+          { type: 'num-fmt', targets: [2,3,4,5], className: 'text-right'}
+      ],
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
+  });
+</script>
+{% endblock %}

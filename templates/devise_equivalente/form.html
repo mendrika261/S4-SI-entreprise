@@ -1,0 +1,117 @@
+{% extends 'base/root_nav.html' %}
+{% load humanize %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>{{ title }}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Plan comptable</a></li>
+              <li class="breadcrumb-item active">{{ action|capfirst }}</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      <a class="btn btn-outline-secondary" href="{% url 'list_devise_equivalente' %}">
+                          Afficher la liste <i class="fas fa-list-alt"></i>
+                      </a>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                          <!-- form start -->
+                          <form id="form" method="post" enctype="multipart/form-data" {{ form_action|safe }}>
+                              {% csrf_token %}
+
+                              <div class="form-group">
+                                  <label for="devise">Devise</label>
+                                  <select name="devise" id="devise" class="select2bs4"
+                                          data-placeholder='Choisir une devise' style="width:100%;"
+                                          {% if remove %}disabled{% endif %} required>
+                                        {% for devise1 in devises %}
+                                            {% if devise and devise == devise1.id %}
+                                                <option value="{{ devise1.id }}" selected>{{ devise1.nom }}</option>
+                                            {% else %}
+                                                <option value="{{ devise1.id }}">{{ devise1 }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                  </select>
+                              </div>
+
+                            <div class="form-group">
+                                  <label for="devise_equivalente">Devise equivalente</label>
+                                  <select name="devise_equivalente" id="devise_equivalente" class="select2bs4"
+                                          data-placeholder='Choisir une devise equivalente' style="width:100%;"
+                                          {% if remove %}disabled{% endif %} required>
+                                          {% for devise2 in devises %}
+                                            {% if devise_equivalente and devise_equivalente == devise2.id %}
+                                                <option value="{{ devise2.id }}" selected>{{ devise2.nom }}</option>
+                                            {% else %}
+                                                <option value="{{ devise2.id }}">{{ devise2 }}</option>
+                                            {% endif %}
+                                          {% endfor %}
+                                  </select>
+                              </div>
+                              <div class="form-group">
+                                  <label for="taux">Taux</label>
+                                  <input type="number" id="taux" class="form-control" name="taux" placeholder="ex: 300.33"
+                                         value="{{ taux|floatformat:'.2f' }}" {% if remove %}disabled{% endif %}
+                                          min="0" required>
+                              </div>
+
+                              <div class="form-group d-flex justify-content-center">
+                                <button type="submit" class="btn btn-{{ color }} mr-5">
+                                    {{ action|capfirst }}
+                                    <i class="{{ icon }}"></i>
+                                </button>
+                              </div>
+                          </form>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(function () {
+    $('#form').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+    });
+});
+</script>
+{% endblock %}

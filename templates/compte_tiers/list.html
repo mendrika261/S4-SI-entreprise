@@ -1,0 +1,107 @@
+{% extends 'base/root_nav.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Liste des comptes tiers</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Plan comptable</a></li>
+              <li class="breadcrumb-item active">Tous les comptes tiers</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      <a class="btn btn-outline-success" href="{% url 'create_compte_tiers' %}">
+                          Ajouter un compte tiers <i class="fas fa-plus"></i>
+                      </a>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <table id="list" class="table table-bordered table-striped">
+                      <thead>
+                          <tr>
+                              <th>Compte général</th>
+                              <th>Code</th>
+                              <th>Intitulé</th>
+                              <th>Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                      {% for compte_tiers in compte_tierss %}
+                          <tr>
+                            <td>{{ compte_tiers.compte_general }}</td>
+                            <td>{{ compte_tiers.code }}</td>
+                            <td>{{ compte_tiers.intitule }}</td>
+                            <td>
+                                <a class="btn btn-warning"
+                                   href="{% url 'update_compte_tiers' id_object=compte_tiers.id %}">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <a class="btn btn-danger"
+                                    href="{% url 'update_compte_tiers' id_object=compte_tiers.id %}?remove">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                          </tr>
+                      {% endfor %}
+                      </tbody>
+                      <tfoot>
+                          <tr>
+                              <th>Compte général</th>
+                              <th>Code</th>
+                              <th>Intitulé</th>
+                              <th>Actions</th>
+                          </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+  $(function () {
+    $("#list").DataTable({
+      "language": get_datatable_lang(),
+      "columnDefs": [{ "targets": -1, "orderable": false, "searchable": false }],
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
+  });
+</script>
+{% endblock %}
+

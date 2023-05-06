@@ -1,0 +1,22 @@
+# Ignore database files
+db.sqlite3
+*.db
+
+# Ignore media files
+# upload/
+
+# Ignore compiled Python files
+*.pyc
+__pycache__/
+
+# Ignore log files
+*.log
+
+# Ignore virtual environment files
+venv/
+.env
+
+# Ignore operating system files
+.DS_Store
+Thumbs.db
+.idea/

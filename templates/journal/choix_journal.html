@@ -1,0 +1,78 @@
+{% extends 'base/root_nav.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Choix de journal</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Journal</a></li>
+              <li class="breadcrumb-item active">Ecriture</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      <a class="btn btn-outline-success" href="{% url 'create_code_journal' %}">
+                          Ajouter un journal <i class="fas fa-plus"></i>
+                      </a>
+                      <button class="btn btn-outline-info">
+                          Importer .csv <i class="fas fa-file-import"></i>
+                      </button>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                      <div class="row">
+                          {% for l in liste_journal %}
+                            <div class="col-lg-2 col-6">
+                            <!-- small card -->
+                                <div class="small-box bg-{{ l.color }}">
+                                    <div class="inner">
+                                        <h3>{{ l.code }}</h3>
+                                        <p>{{ l.nom }}</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="{{ l.icon }}"></i>
+                                    </div>
+                                    <a href="{% url 'add_journal' id_journal=l.id %}" class="small-box-footer">
+                                        Ecrire dans le journal
+                                        <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                          {% endfor %}
+                      </div>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+</script>
+{% endblock %}

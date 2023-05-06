@@ -1,0 +1,151 @@
+{% extends 'base/root_nav.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <br>
+            <h2 class="text-center display-4" style="text-shadow: 5px 5px 10px white;">Grand livre</h2>
+            <div class="">
+                <form method="post" class="">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-10 offset-md-1">
+                        <div class="row">
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Compte général</label>
+                                    <select class="select2bs4" style="width: 100%;" name="compte_general">
+                                        <option value="">Tous</option>
+                                        {% for c in compte_general %}
+                                            <option value="{{c.id}}" {% if c.id == filtre_compte_general %}selected{% endif %}>{{ c }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Compte tiers</label>
+                                    <select class="select2bs4" style="width: 100%;" name="compte_tiers">
+                                        <option value="">Tous</option>
+                                        {% for c in compte_tiers %}
+                                            <option value="{{c.id}}" {% if c.id == filtre_compte_tiers %}selected{% endif %}>{{ c }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label>Mois</label>
+                                    <select class="select2bs4" style="width: 100%;" name="mois">
+                                        {% for m in mois %}
+                                            {{m}}
+                                            <option value="{{m}}" {% if m == filtre.mois %}selected{% endif %}>{{ m }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label>Année</label>
+                                    <select class="select2bs4" style="width: 100%;" name="annee">
+                                        {% for a in annee %}
+                                            <option value="{{a}}" {% if a == filtre.annee %}selected{% endif %}>{{ a }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label></label>
+                                    <button type="submit" style="width: 100%; margin-top: 8px;"
+                                            class="btn btn-info">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if livre is not None %}
+                <div class="row">
+                    <div class="card col-12">
+                        <div class="card-body">
+                            <table id="list" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                          <th>Journal</th>
+                          <th>Date</th>
+                          <th>Intitulé</th>
+                          <th>Pièce</th>
+                          <th>Débit</th>
+                          <th>Crédit</th>
+                          <th>Action</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {% for ligne in livre %}
+                        <tr>
+                            <td>{{ ligne.journal }}</td>
+                            <td>{{ ligne.date }}</td>
+                            <td>{{ ligne.intitule }}</td>
+                            <td>{{ ligne.piece }}</td>
+                            <td>{{ ligne.debit|intcomma }}</td>
+                            <td>{{ ligne.credit|intcomma }}</td>
+                            <td>
+                                <a class="btn btn-info" href="{% url 'ecriture_journal' id_piece=ligne.piece.id %}">
+                                    <i class="fas fa-info-circle"></i>
+                                </a>
+                            </td>
+                        </tr>
+                      {% endfor %}
+                      </tbody>
+                      <tfoot>
+                      <tr>
+                          <th>Journal</th>
+                          <th>Date</th>
+                          <th>Intitulé</th>
+                          <th>Pièce</th>
+                          <th>Débit</th>
+                          <th>Crédit</th>
+                          <th>Action</th>
+                      </tr>
+                      </tfoot>
+                    </table>
+                        </div>
+                    </div>
+                </div>
+               {% endif %}
+            </form>
+            </div>
+        </div>
+    </section>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+  $(function () {
+    $("#list").DataTable({
+      "language": get_datatable_lang(),
+      "columnDefs": [
+          { "targets": -1, "orderable": false, "searchable": false },
+          { type: 'date', targets: 0 },
+          { type: 'num-fmt', targets: [4,5], className: 'text-right'}
+      ],
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
+  });
+</script>
+{% endblock %}

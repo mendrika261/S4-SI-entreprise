@@ -1,0 +1,144 @@
+{% extends 'base/root_nav.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Liste des comptes généraux</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Plan comptable</a></li>
+              <li class="breadcrumb-item active">Tous les comptes généraux</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      <a class="btn btn-outline-success" href="{% url 'create_compte_general' %}">
+                          Ajouter un compte général <i class="fas fa-plus"></i>
+                      </a>
+                      <button class="btn btn-outline-info" data-toggle="modal" data-target="#import_csv">
+                          Importer .csv <i class="fas fa-file-import"></i>
+                      </button>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <table id="list" class="table table-bordered table-striped">
+                      <thead>
+                          <tr>
+                              <th>Code</th>
+                              <th>Intitulé</th>
+                              <th>Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                      {% for compte_general in compte_generals %}
+                          <tr>
+                            <td>{{ compte_general.code }}</td>
+                            <td>{{ compte_general.intitule }}</td>
+                            <td>
+                                <a class="btn btn-warning"
+                                   href="{% url 'update_compte_general' id_object=compte_general.id %}">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <a class="btn btn-danger"
+                                    href="{% url 'update_compte_general' id_object=compte_general.id %}?remove">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                          </tr>
+                      {% endfor %}
+                      </tbody>
+                      <tfoot>
+                          <tr>
+                              <th>Code</th>
+                              <th>Intitulé</th>
+                              <th>Actions</th>
+                          </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+
+    <div class="modal fade" id="import_csv" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Importation des comptes générals</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="import-button">
+                    <span aria-hidden="true">×</span>
+                    </button>
+                    </div>
+                <div class="modal-body">
+                    <div class="callout callout-info">
+                      <h5><i class="fas fa-info"></i> Note:</h5>
+                        Le fichier .csv doit avoir les colonnes suivantes: code;intitulé
+                    </div>
+                    <form method="post" enctype="multipart/form-data" action="{% url 'import_csv_compte_general' %}">
+                        {% csrf_token %}
+                        <div class="custom-file">
+                            <label for="file" class="custom-file-label">Sélectionner un fichier</label>
+                            <input type="file" class="custom-file-input" placeholder="Importer .csv" name="file" id="file">
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="header" id="header">
+                            <label for="header">En tête sur la première ligne</label>
+                        </div>
+                        <div class="form-group d-flex justify-content-center">
+                            <button type="submit" class="btn btn-success mr-5">
+                                    Importer <i class="fas fa-file-import"></i>
+                            </button>
+                       </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+  $(function () {
+    $("#list").DataTable({
+      "language": get_datatable_lang(),
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+      "columnDefs": [
+          { "targets": -1, "orderable": false, "searchable": false },
+      ],
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
+  });
+</script>
+{% endblock %}
+

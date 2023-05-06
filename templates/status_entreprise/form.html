@@ -1,0 +1,130 @@
+{% extends 'base/root_nav.html' %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>{{ title }}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Status entreprise</a></li>
+              <li class="breadcrumb-item active">{{ action|capfirst }}</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      <a class="btn btn-outline-secondary" href="{% url 'list_status_entreprise' %}">
+                          Afficher la liste <i class="fas fa-list-alt"></i>
+                      </a>
+                      <button class="btn btn-outline-info" data-toggle="modal" data-target="#import_csv">
+                          Importer .csv <i class="fas fa-file-import"></i>
+                      </button>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                          <!-- form start -->
+                          <form id="form" method="post" enctype="multipart/form-data" {{ form_action|safe }}>
+                              {% csrf_token %}
+
+                              <div class="form-group">
+                                  <label for="nom">Nom</label>
+                                  <input type="text" id="nom" class="form-control" name="nom" placeholder="ex: Societe Anonyme"
+                                         value="{{ nom }}" {% if remove %}disabled{% endif %}
+                                          maxlength="50" required>
+                              </div>
+                              <div class="form-group">
+                                  <label for="sigle">Sigle</label>
+                                  <input type="text" id="sigle" class="form-control" name="sigle" placeholder="ex: SA"
+                                         value="{{ sigle }}" {% if remove %}disabled{% endif %}
+                                          maxlength="10" required>
+                              </div>
+
+                              <div class="form-group d-flex justify-content-center">
+                                <button type="submit" class="btn btn-{{ color }} mr-5">
+                                    {{ action|capfirst }}
+                                    <i class="{{ icon }}"></i>
+                                </button>
+                              </div>
+                          </form>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+    <div class="modal fade" id="import_csv" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Importation des statuts d'entreprise</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" id="import-button">
+                    <span aria-hidden="true">×</span>
+                    </button>
+                    </div>
+                <div class="modal-body">
+                    <div class="callout callout-info">
+                      <h5><i class="fas fa-info"></i> Note:</h5>
+                        Le fichier .csv doit avoir les colonnes suivantes: nom;sigle
+                    </div>
+                    <form method="post" enctype="multipart/form-data" action="{% url 'import_csv_status_entreprise' %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="file">Sélectionner un fichier</label>
+                            <input type="file" class="form-control" placeholder="Importer .csv" name="file" id="file">
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="header" id="header">
+                            <label for="header">En tête sur la première ligne</label>
+                        </div>
+                        <div class="form-group d-flex justify-content-center">
+                            <button type="submit" class="btn btn-success mr-5">
+                                    Importer <i class="fas fa-file-import"></i>
+                            </button>
+                       </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(function () {
+    $('#form').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+    });
+});
+</script>
+{% endblock %}
