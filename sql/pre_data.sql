@@ -13,7 +13,7 @@ INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Devise
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Historique Société', 'fas fa-landmark', 'historique/', 4, 9);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Balance', 'fas fa-balance-scale', 'balance/', 3, null);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Pièce', 'fas fa-puzzle-piece', 'piece/lister', 3, 3);
-INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Exercice', 'fas fa-hourglass-half', 'exercice/lister', 3, 3);
+INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Exercice', 'fas fa-hourglass-half', 'self/lister', 3, 3);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Status d''entreprise', 'fas fa-gavel', 'status_entreprise/lister', 3, 9);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Etat financier', 'fas fa-chart-line', null, 2, null);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Actif', 'fas fa-laptop-house', 'etat_financier/actif', 1, 17);
@@ -238,3 +238,6 @@ INSERT INTO comptable_ecriturejournal(date, intitule, debit, credit, compte_gene
 INSERT INTO comptable_ecriturejournal(date, intitule, debit, credit, compte_general_id, compte_tiers_id, devise_id, journal_id, piece_id, exercice_id) VALUES ('2023-01-01', 'A NOUVEAU 2022', 300300, 0, 64, null, 1, 2, 1, 1);
 INSERT INTO comptable_ecriturejournal(date, intitule, debit, credit, compte_general_id, compte_tiers_id, devise_id, journal_id, piece_id, exercice_id) VALUES ('2023-01-01', 'A NOUVEAU 2022', 0, 119560, 66, null, 1, 2, 1, 1);
 INSERT INTO comptable_ecriturejournal(date, intitule, debit, credit, compte_general_id, compte_tiers_id, devise_id, journal_id, piece_id, exercice_id) VALUES ('2023-01-01', 'A NOUVEAU 2022', 18320, 0, 68, null, 1, 2, 1, 1);
+
+-- Creation de l'entreprise --
+INSERT INTO comptable_log(title, icon, content, color, date) VALUES ('Création de l''entreprise', 'fas fa-building', '', 'success', '2023-01-01');

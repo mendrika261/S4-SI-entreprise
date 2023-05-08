@@ -38,11 +38,8 @@ def add_journal(request, id_journal):
 
     if request.method == 'POST':
         try:
-            debits_value = [float(i) for i in request.POST.getlist('debit[]') if i != '']
-            credits_value = [float(i) for i in request.POST.getlist('credit[]') if i != '']
-            if sum(debits_value) != sum(credits_value):
-                raise ValidationError('La somme des débits doit être égale à la somme des crédits')
-
+            debit_sum = 0
+            credit_sum = 0
             for prefixe_piece, numero_piece, compte_general, compte_tiers, intitule, debit, credit, devise, date in \
                     zip(request.POST.getlist('prefixe_piece[]'), request.POST.getlist('numero_piece[]'),
                         request.POST.getlist('compte_general[]'), request.POST.getlist('compte_tiers[]'),
@@ -60,6 +57,7 @@ def add_journal(request, id_journal):
                 else:
                     piece = Piece.objects.get(prefixe=prefixe, numero=numero_piece)
                 piece_id = piece.id
+
                 ecriture = EcritureJournal.create(
                     journal_id=journal.id,
                     piece_id=piece_id,
@@ -73,12 +71,16 @@ def add_journal(request, id_journal):
                 )
                 if ecriture is None:
                     raise ValidationError(f'L\'écriture {intitule} n\'a pas pu être créée')
+                debit_sum += ecriture.debit
+                credit_sum += ecriture.credit
+
+            if debit_sum != credit_sum:
+                raise ValidationError('La somme des débits doit être égale à la somme des crédits')
 
             context['success'] = ["L'écriture a été enregistrée dans l'exercice " + str(Exercice.get_current())]
         except ValidationError as e:
             context['errors'] = e.messages
-        except Exception:
-            context['errors'] = ['Une erreur est survenue']
+
     return render(request, 'journal/ecriture_journal.html', context)
 
 

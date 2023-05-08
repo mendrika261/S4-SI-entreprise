@@ -34,6 +34,8 @@ def create(request):
             context['fin'] = request.POST['fin']
             context['errors'] = e.messages
             # FIN
+        except Exception as e:
+            context['errors'] = [str(e)]
     return render(request, template_form, context)
 
 
@@ -94,7 +96,18 @@ def remove(request, id_object):
 @login_required
 def read(request):
     # DEBUT TODO
-    context = {nom_simple + 's': Exercice.objects.all()}
-
+    context = {
+        nom_simple + 's': Exercice.objects.all(),
+        'exercice_actif': Exercice.get_current()
+    }
     # FIN
     return render(request, list_template, context)
+
+
+@login_required
+def close(request, exercice_id):
+    # DEBUT TODO
+    exercice = get_object_or_404(Exercice, pk=exercice_id)
+    exercice.close()
+    # FIN
+    return redirect('list_' + nom_simple)

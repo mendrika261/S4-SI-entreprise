@@ -1,4 +1,4 @@
-  {% extends 'base/root_nav.html' %}
+{% extends 'base/root_nav.html' %}
 {% load humanize %}
 
 {% block content %}
@@ -13,8 +13,8 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item">Actif</li>
-              <li class="breadcrumb-item active">{{ exercice }}</li>
+              <li class="breadcrumb-item">Bilan</li>
+              <li class="breadcrumb-item active">Actif</li>
             </ol>
           </div>
         </div>
@@ -23,6 +23,36 @@
 
     <section class="content">
       <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-10 offset-md-1">
+                        <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-3"></div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Exercice</label>
+                                    <select class="select2bs4" style="width: 100%;" name="exercice_id">
+                                        {% for c in exercices %}
+                                            <option value="{{c.id}}" {% if c.id == exercice.id %}selected{% endif %}>{{ c }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label></label>
+                                    <button type="submit" style="width: 100%; margin-top: 8px;"
+                                            class="btn btn-info">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+
         <div class="row">
           <div class="col-12">
             <!-- Main content -->
@@ -31,7 +61,7 @@
               <div class="row">
                 <div class="col-12">
                   <h4>
-                    <i class="fas fa-globe"></i> {{ societe }} <span class="badge bg-info">{{ societe.status_entreprise }}</span>
+                    <i class="fas fa-globe"></i> {{ societe }}
                     <small class="float-right"></small>
                   </h4>
                 </div>
@@ -41,13 +71,23 @@
               <div class="row invoice-info">
                 <div class="col-sm-4 invoice-col">
                   <div>
-                    <strong>Adresse: </strong> {{ societe.siege }}<br>
-                    <strong>Capital: </strong> {{ capital|intcomma }}<br>
+                    <strong>Exercice: </strong> {{ exercice }} <br>
+                    <strong>Status: </strong>
+                    {% if exercice.cloture %}
+                        <span class="badge badge-success">Clôturé</span>
+                    {% elif exercice == exercice_actuel %}
+                        <span class="badge badge-warning">Exercice en cours</span>
+                    {% else %}
+                        <span class="badge badge-danger">Non clôturé</span>
+                    {% endif %}
+                    <br>
                     <strong>Unite monétaire: </strong> {{ societe.devise_compte }}<br>
+                    <strong>Adresse: </strong> {{ societe.siege }}<br>
                   </div>
                 </div>
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
+                    <strong>Status Entreprise: </strong>{{societe.status_entreprise }} <br>
                     <strong>NIF: </strong>{{ societe.nif }}<br>
                     <strong>STAT: </strong>{{ societe.stat }}<br>
                     <strong>REG COMMERCE: </strong>{{ societe.reg_commerce }}<br>
@@ -68,11 +108,13 @@
                       <th>Actif</th>
                       <th>Compte</th>
                       <th colspan="3" class="text-center">{{ exercice.fin }}</th>
+                      <th>{{ exercice_avant.fin }}</th>
                     </tr>
                     <tr>
                         <th></th>
                         <th></th>
                         <th colspan="3" class="text-center">Montant</th>
+                        <th></th>
                     </tr>
                     <tr>
                         <th></th>
@@ -80,9 +122,11 @@
                         <th class="text-center">Brut</th>
                         <th class="text-center">Amort./Prov.</th>
                         <th class="text-center">Net</th>
+                        <th></th>
                     </tr>
                     <tr>
                             <th>Actifs non courants</th>
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -94,57 +138,63 @@
                             <td>Immobilisations incorporelles</td>
                             <td>20</td>
                             <td>{{ immobilisation_incorporelle|intcomma }}</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ ammortissement_incorporelle|intcomma }}</td>
+                            <td>{{ net_immobilisation_incorporelle|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Immobilisations corporelles</td>
                             <td>21</td>
                             <td>{{ immobilisation_corporelle|intcomma }}</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ ammortissement_corporelle|intcomma }}</td>
+                            <td>{{ net_immobilisation_corporelle|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Immobilisations biologiques</td>
                             <td>22</td>
                             <td>{{ immobilisation_biologique|intcomma }}</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ ammortissement_biologique|intcomma }}</td>
+                            <td>{{ net_immobilisation_biologique|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Immobilisations en cours</td>
                             <td>23</td>
                             <td>{{ immobilisation_en_cours|intcomma }}</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ ammortissement_en_cours|intcomma }}</td>
+                            <td>{{ net_immobilisation_en_cours|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Immobilisations financières</td>
                             <td>25</td>
                             <td>{{ immobilisation_financiere|intcomma }}</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ prov_immobilisation_financiere|intcomma }}</td>
+                            <td>{{ net_immobilisation_financiere|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Impôt différés</td>
                             <td>13</td>
                             <td>{{ impot_differe|intcomma }}</td>
                             <td>0</td>
-                            <td>0</td>
+                            <td>{{ net_impot_differe|intcomma }}</td>
+                            <td></td>
                         </tr>
-                    </tbody>
-                    <tfoot>
                         <tr>
                             <th>Total actifs non courants</th>
                             <th></th>
                             <th>{{ total_actif_non_courant|intcomma }}</th>
-                            <th>0</th>
-                            <th>0</th>
+                            <th>{{ total_ammort_actif_non_courant|intcomma }}</th>
+                            <th>{{ total_actif_non_courant_net |intcomma }}</th>
+                            <th></th>
                         </tr>
-                    </tfoot>
+                    </tbody>
                     <thead>
                         <tr>
                             <th>Actifs courants</th>
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -156,54 +206,59 @@
                             <td>Stocks et en-cours</td>
                             <td>3</td>
                             <td>{{ stocks|intcomma }}</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ prov_pour_depreciation_stocks|intcomma }}</td>
+                            <td>{{ net_stocks|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Créances et emplois assimilés</td>
                             <td>4</td>
                             <td>{{ creances|intcomma }}</td>
                             <td>0</td>
-                            <td>0</td>
+                            <td>{{ net_creances|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td><small>Clients et autres débiteurs</small></td>
+                            <td class="indent"><small>Clients et autres débiteurs</small></td>
                             <td>41</td>
+                            <td>{{ clients|intcomma }}</td>
                             <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ net_clients|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td><small>Impôts /bénéfice</small></td>
+                            <td class="indent"><small>Impôts /bénéfice</small></td>
                             <td></td>
                             <td>0</td>
                             <td>0</td>
                             <td>0</td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td><small>Autres créances et actifs assimilés</small></td>
+                            <td class="indent"><small>Autres créances et actifs assimilés</small></td>
                             <td>4</td>
+                            <td>{{ autres_creances|intcomma }}</td>
                             <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
+                            <td>{{ net_autres_creances|intcomma }}</td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td>Trésorerie et équivalents de trésorerie</td>
                             <td>5</td>
                             <td>{{ tresorerie|intcomma }}</td>
                             <td>0</td>
-                            <td>0</td>
+                            <td>{{ net_tresorerie|intcomma }}</td>
+                            <td></td>
                         </tr>
-                    </tbody>
-                    <tfoot>
                         <tr>
                             <th>Total actifs courants</th>
                             <th></th>
                             <th>{{ total_actif_courant|intcomma }}</th>
-                            <th>0</th>
-                            <th>0</th>
+                            <th>{{ total_prov_actif_courant|intcomma }}</th>
+                            <th>{{ total_actif_courant_net|intcomma }}</th>
+                            <th></th>
                         </tr>
-                    </tfoot>
+                    </tbody>
                   </table>
                 </div>
                 <!-- /.col -->
@@ -227,11 +282,11 @@
                         </tr>
                         <tr>
                             <td>Amort./Prov.</td>
-                            <td>0</td>
+                            <td>{{ total_ammort_actif|intcomma }}</td>
                         </tr>
                         <tr>
                             <td>Net</td>
-                            <td>0</td>
+                            <td>{{ total_actif_net|intcomma }}</td>
                         </tr>
                     </table>
                   </div>
@@ -254,4 +309,12 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+  <style>
+    .table td:not(:first-child), .table th:not(:first-child) {
+        text-align: right;
+    }
+    .table .indent {
+        text-indent: 10%;
+    }
+  </style>
   {% endblock %}

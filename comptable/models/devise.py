@@ -54,3 +54,12 @@ class Devise(models.Model):
     def remove(self):
         self.delete()
         return 0
+
+    def get_current_value(self):
+        if self.code == 'MGA':
+            return 1
+        from comptable.models import DeviseEquivalente
+        try:
+            return float(DeviseEquivalente.objects.filter(devise_equivalente=self).order_by('-date').first().taux)
+        except Exception:
+            raise ValidationError(f'La devise {self} n\'a pas de taux de change actuel')

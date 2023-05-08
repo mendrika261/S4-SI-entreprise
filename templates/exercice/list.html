@@ -39,6 +39,7 @@
                     <table id="list" class="table table-bordered table-striped">
                       <thead>
                           <tr>
+                              <th>Status</th>
                               <th>Debut</th>
                               <th>Fin</th>
                               <th>Actions</th>
@@ -47,13 +48,22 @@
                       <tbody>
                       {% for exercice in exercices %}
                           <tr>
+                            <td>{% if exercice.cloture %}
+                                    <span class="badge badge-success">Cloturé</span>
+                                {% elif exercice == exercice_actif %}
+                                    <span class="badge badge-primary">Actif</span>
+                                {% else %}
+                                    <span class="badge badge-warning">Non cloturé</span>
+                                {% endif %}
+                            </td>
                             <td>{{ exercice.debut }}</td>
                             <td>{{ exercice.fin }}</td>
                             <td>
-                                <a class="btn btn-success"
-                                   href="{% url 'update_exercice' id_object=exercice.id %}">
+                                {% if not exercice.cloture %}
+                                <button class="btn btn-success" data-toggle="modal" data-target="#confirmation_cloture{{ exercice.id }}">
                                     <i class="fas fa-check"></i>
-                                </a>
+                                </button>
+                                {% endif %}
                                 <a class="btn btn-warning"
                                    href="{% url 'update_exercice' id_object=exercice.id %}">
                                     <i class="fas fa-pencil-alt"></i>
@@ -62,12 +72,34 @@
                                     href="{% url 'update_exercice' id_object=exercice.id %}?remove">
                                     <i class="fas fa-trash-alt"></i>
                                 </a>
+                                <div class="modal fade" id="confirmation_cloture{{ exercice.id }}" aria-hidden="true" style="display: none;">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                Confirmation
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="callout callout-danger">
+                                                  <h5><i class="fas fa-exclamation-triangle"></i> Note:</h5>
+                                                    Le fait de cloturer un exercice entraine la cloture de tous les journaux de l'exercice.
+                                                </div>
+                                                <div class="d-flex justify-content-end">
+                                                    <button type="button" class="btn btn-success" data-dismiss="modal">Annuler</button>
+                                                    <a class="ml-2 d-block btn btn-outline-danger" href="{% url 'cloturer_exercice' exercice_id=exercice.id %}">
+                                                        Cloturer <i class="fas fa-check"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </td>
                           </tr>
                       {% endfor %}
                       </tbody>
                       <tfoot>
                           <tr>
+                              <th>Status</th>
                               <th>Debut</th>
                               <th>Fin</th>
                               <th>Actions</th>

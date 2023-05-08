@@ -19,6 +19,7 @@ urlpatterns = [
     path('exercice/modifier/<int:id_object>', exercice_view.update, name='update_exercice'),
     path('exercice/supprimer/<int:id_object>', exercice_view.remove, name='remove_exercice'),
     path('exercice/lister', exercice_view.read, name='list_exercice'),
+    path('exercice/cloturer/<int:exercice_id>', exercice_view.close, name='cloturer_exercice'),
 
     # devise_equivalente
     path('devise_equivalente/ajouter', devise_equivalente_view.create, name='create_devise_equivalente'),
@@ -78,5 +79,6 @@ urlpatterns = [
     path('status_entreprise/importer', status_entreprise_view.import_from_csv, name='import_csv_status_entreprise'),
 
     # etat financier
-    path('etat_financier/actif', etat_financier_view.bilan_actif, name='etat_financier_actif'),
+    path('etat_financier/actif/', etat_financier_view.bilan_actif, name='etat_financier_actif'),
+    path('etat_financier/actif/<int:exercice_id>', etat_financier_view.bilan_actif, name='etat_financier_actif_exercice'),
 ]

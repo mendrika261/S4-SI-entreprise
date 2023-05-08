@@ -41,7 +41,7 @@ class EcritureJournal(models.Model):
         if date == '' or date is None:
             raise ValidationError('La date ne peut pas être vide')
         try:
-            self.date = datetime.strptime(date, '%d/%m/%Y')
+            self.date = datetime.strptime(date, '%Y-%m-%d')
         except Exception:
             raise ValidationError('La date n\'est pas au bon format dd/mm/aaaa')
 
@@ -79,20 +79,20 @@ class EcritureJournal(models.Model):
 
     def set_debit(self, debit):
         if debit == '' or debit is None:
-            raise ValidationError('Le débit ne peut pas être vide')
-        try:
-            self.debit = float(debit)
-            if debit < 0:
-                raise ValidationError('Le débit doit être positif')
-        except Exception:
-            raise ValidationError('Le débit doit être un nombre')
+            debit = 0
+
+        taux = self.devise.get_current_value()
+        self.debit = float(debit) * taux
+        if float(debit) < 0:
+            raise ValidationError('Le débit doit être positif')
 
     def set_credit(self, credit):
         if credit == '' or credit is None:
-            raise ValidationError('Le crédit ne peut pas être vide')
+            credit = 0
         try:
-            self.credit = float(credit)
-            if credit < 0:
+            taux = self.devise.get_current_value()
+            self.credit = float(credit) * taux
+            if float(credit) < 0:
                 raise ValidationError('Le crédit doit être positif')
         except Exception:
             raise ValidationError('Le crédit doit être un nombre')
@@ -105,18 +105,17 @@ class EcritureJournal(models.Model):
 
         from comptable.models import Exercice
         exercice = Exercice.get_current()
-        ecriture.set_exercice(exercice)
+        ecriture.exercice = exercice
 
         ecriture.set_journal(journal_id)
         ecriture.set_piece(piece_id)
         ecriture.set_compte_general(compte_general_id)
 
-        if compte_tiers_id != '' or compte_tiers_id is not None:
+        if compte_tiers_id != '' and compte_tiers_id is not None:
             if CompteTiers.objects.filter(compte_general=ecriture.compte_general, id=compte_tiers_id).count() == 0:
                 raise ValidationError(f'Le compte tiers #{compte_tiers_id} n\'est pas associé au compte général '
                                       f'{ecriture.compte_general}')
             ecriture.set_compte_tiers(compte_tiers_id)
-
         ecriture.set_intitule(intitule)
         ecriture.set_devise(devise_id)
         ecriture.set_debit(debit)

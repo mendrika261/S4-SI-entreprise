@@ -1,6 +1,7 @@
   {% extends 'base/root_nav.html' %}
+{% load humanize %}
 
-  {% block content %}
+{% block content %}
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -75,8 +76,8 @@
                     <tr>
                       <td>{{ ecriture.compte_general }}</td>
                       <td>{% if ecriture.compte_tiers %}{{ ecriture.compte_tiers }}{% endif %}</td>
-                      <td class="text-right">{{ ecriture.debit }}</td>
-                      <td class="text-right">{{ ecriture.credit }}</td>
+                      <td class="text-right">{{ ecriture.debit|intcomma }}</td>
+                      <td class="text-right">{{ ecriture.credit|intcomma }}</td>
                     </tr>
                     {% endfor %}
                     </tbody>

@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Sum
 from django.urls import reverse
 from django.utils.timezone import now
 
@@ -58,10 +59,103 @@ class Exercice(models.Model):
     @staticmethod
     def get_current():
         obj = Exercice.objects.filter(debut__lte=now(), fin__gte=now()).first()
-        if obj is None:
+        if obj is None or obj.cloture:
             raise ValidationError("Vous devez d'abord créer un exercice "
                                   "<a href='" + reverse('create_exercice') + "' class='text-bold'> Cliquer ici</a>")
-        if obj.cloture is not None:
-            raise ValidationError("Il n'y pas d'exercice actuelle "
-                                  "<a href='" + reverse('create_exercice') + "' class='text-bold'> Créer</a>")
         return obj
+
+    @staticmethod
+    def get_before_current():
+        try:
+            return Exercice.objects.filter(debut__lte=now(), fin__gte=now()).order_by('-debut')[1]
+        except Exception:
+            return None
+
+    @staticmethod
+    def get_compte(compte_general_code):
+        from comptable.models import CompteGeneral
+        return CompteGeneral.objects.filter(code__startswith=compte_general_code)
+
+    def get_value(self, compte_general_code, actif=True):
+        from comptable.models import EcritureJournal
+        comptes = self.get_compte(compte_general_code)
+        total = 0
+        for compte in comptes:
+            credit = EcritureJournal.objects.filter(exercice=self, compte_general=compte).aggregate(Sum('credit'))['credit__sum']
+            debit = EcritureJournal.objects.filter(exercice=self, compte_general=compte).aggregate(Sum('debit'))['debit__sum']
+            if credit is None:
+                credit = 0
+            if debit is None:
+                debit = 0
+            if debit - credit >= 0 or str(compte_general_code).startswith('2') or str(compte_general_code).startswith('3'):
+                total += debit - credit
+        return total
+
+    def get_total(self, *compte_general_id):
+        total = 0
+        for compte in compte_general_id:
+            total += self.get_value(compte)
+        return total
+
+    def get_actif(self):
+        return {
+            'capital': self.get_value(10100),
+
+            'immobilisation_incorporelle': self.get_value(20),
+            'ammortissement_incorporelle': abs(self.get_value(280)),
+            'net_immobilisation_incorporelle': self.get_value(20) + self.get_value(280),
+
+            'immobilisation_corporelle': self.get_value(21),
+            'ammortissement_corporelle': abs(self.get_value(281)),
+            'net_immobilisation_corporelle': self.get_value(21) + self.get_value(281),
+
+            'immobilisation_biologique': self.get_value(22),
+            'ammortissement_biologique': abs(self.get_value(282)),
+            'net_immobilisation_biologique': self.get_value(22) + self.get_value(282),
+
+            'immobilisation_en_cours': self.get_value(23),
+            'ammortissement_en_cours': abs(self.get_value(283)),
+            'net_immobilisation_en_cours': self.get_value(23),
+
+            'immobilisation_financiere': self.get_value(25),
+            'prov_immobilisation_financiere': abs(self.get_value(285)),
+            'net_immobilisation_financiere': self.get_value(25, 285),
+
+            'impot_differe': self.get_value(13),
+            'net_impot_differe': self.get_value(13),
+
+            'total_actif_non_courant': self.get_total(20, 21, 22, 23, 25, 13),
+            'total_ammort_actif_non_courant': abs(self.get_total(280, 281, 282, 283, 285)),
+            'total_actif_non_courant_net': self.get_total(20, 21, 22, 23, 25, 13, 280, 281, 282, 283, 285),
+
+            # actif courant
+            'stocks': self.get_total(32, 35, 37),
+            'prov_pour_depreciation_stocks': abs(self.get_value(39)),
+            'net_stocks': self.get_total(32, 35, 37, 39),
+
+            'clients': self.get_value(41),
+            'net_clients': self.get_value(41),
+
+            'autres_creances': self.get_total(409, 467, 4457),
+            'net_autres_creances': self.get_total(409, 467, 4457),
+
+            'creances': self.get_total(41, 409, 467, 4457),
+            'net_creances': self.get_total(41, 409, 467, 4457),
+
+            'tresorerie': self.get_value(5),
+            'net_tresorerie': self.get_value(5),
+
+            'total_actif_courant': self.get_total(32, 35, 37, 41, 409, 467, 4457, 5),
+            'total_prov_actif_courant': abs(self.get_total(39)),
+            'total_actif_courant_net': self.get_total(32, 35, 37, 41, 409, 467, 4457, 5, 39),
+
+            # total actif
+            'total_actif': self.get_total(20, 21, 22, 23, 25, 13, 32, 35, 37, 41, 409, 467, 4457, 5),
+            'total_ammort_actif': abs(self.get_total(280, 281, 282, 283, 285, 39)),
+            'total_actif_net': self.get_total(20, 21, 22, 23, 25, 13, 32, 35, 37, 41, 409, 467, 4457, 5, 280, 281, 282,
+                                              283, 285, 39),
+        }
+
+    def get_value_by_name(self, name):
+        values = self.get_actif()
+        return values.get(name, 0)
