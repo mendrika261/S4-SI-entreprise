@@ -306,8 +306,21 @@
         xhr.send();
         console.log("compte tiers set")
     }
-</script>
-<script>
+
+    function resetAllDataTables() {
+      // Loop through all DataTables on the page
+      $('#list').each(function() {
+        // Get a reference to the DataTable instance
+        var dataTable = $(this).DataTable();
+
+        // Destroy the table
+        dataTable.destroy();
+
+        // Re-initialize the table
+        dataTable = $(this).DataTable();
+      });
+    }
+
     $(function () {
         set_compte_tiers(document.getElementById('row1').getElementsByClassName('compte_general')[0]);
 
@@ -338,7 +351,7 @@
           "ordering": false,
           "info": false,
           "autoWidth": false,
-    }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
+      }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
     });
 </script>
 {% endblock %}

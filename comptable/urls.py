@@ -3,7 +3,7 @@ from django.urls import path
 
 from comptable.views import compte_general_view, compte_tiers_view, code_journal_view, journal_view, devise_view, \
     devise_equivalente_view, piece_view, exercice_view, historique_societe_view, status_entreprise_view, \
-    etat_financier_view
+    etat_financier_view, centre_view, produit_view
 
 urlpatterns = [
     path('', lambda request: redirect('choix_journal'), name='home'),
@@ -59,6 +59,8 @@ urlpatterns = [
     path('journal/choix', journal_view.choix_journal, name='choix_journal'),
     path('journal/ecriture/<int:id_journal>', journal_view.add_journal, name='add_journal'),
     path('journal/ecriture/view/<int:id_piece>', journal_view.view_ecriture, name='ecriture_journal'),
+    path('fill_charge/<int:piece_id>', journal_view.fill_charge, name='fill_charge'),
+    path('journal/supprimer/<piece_code>', journal_view.remove_ecriture, name='remove_ecriture'),
 
     # grand journal
     path('grand_livre/', journal_view.get_grand_livre, name='grand_livre'),
@@ -81,4 +83,25 @@ urlpatterns = [
     # etat financier
     path('etat_financier/actif/', etat_financier_view.bilan_actif, name='etat_financier_actif'),
     path('etat_financier/actif/<int:exercice_id>', etat_financier_view.bilan_actif, name='etat_financier_actif_exercice'),
+    path('etat_financier/resultat/', etat_financier_view.bilan_resultat, name='etat_financier_resultat'),
+    path('etat_financier/resultat/<int:exercice_id>', etat_financier_view.bilan_resultat, name='etat_financier_resultat_exercice'),
+    path('etat_financier/passif/', etat_financier_view.bilan_passif, name='etat_financier_passif'),
+    path('etat_financier/passif/<int:exercice_id>', etat_financier_view.bilan_passif,
+         name='etat_financier_passif_exercice'),
+
+    # centre
+    path('centre/ajouter', centre_view.create, name='create_centre'),
+    path('centre/modifier/<int:id_object>', centre_view.update, name='update_centre'),
+    path('centre/supprimer/<int:id_object>', centre_view.remove, name='remove_centre'),
+    path('centre/lister', centre_view.read, name='list_centre'),
+
+    # produit
+    path('produit/ajouter', produit_view.create, name='create_produit'),
+    path('produit/modifier/<int:id_object>', produit_view.update, name='update_produit'),
+    path('produit/supprimer/<int:id_object>', produit_view.remove, name='remove_produit'),
+    path('produit/lister', produit_view.read, name='list_produit'),
+
+    # analytique
+    path('analytique/produit/<int:id_produit>', produit_view.analytique_produit, name='analytique_produit'),
+    path('analytique/centre/<int:id_centre>', centre_view.analytique_centre, name='analytique_centre'),
 ]

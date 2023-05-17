@@ -14,7 +14,7 @@
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item">Bilan</li>
-              <li class="breadcrumb-item active">Actif</li>
+              <li class="breadcrumb-item active">Passif</li>
             </ol>
           </div>
         </div>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-        <div class="row" id="myDiv">
+        <div class="row"  id="myDiv">
           <div class="col-12">
             <!-- Main content -->
             <div class="invoice p-3 mb-3">
@@ -98,10 +98,8 @@
                 <!-- /.col -->
                 <div class="col-sm-4 invoice-col">
                 </div>
-              </div>
                 <!-- /.col -->
-
-
+              </div>
               <!-- /.row -->
                 <br>
               <!-- Table row -->
@@ -109,158 +107,145 @@
                 <div class="col-12 table-responsive">
                   <table class="table table-striped">
                     <thead>
-                    <tr>
-                      <th>Actif</th>
-                      <th>Compte</th>
-                      <th colspan="3" class="text-center">{{ exercice.fin }}</th>
-                      <th>{{ exercice_avant.fin }}</th>
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th colspan="3" class="text-center">Montant</th>
-                        <th></th>
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <th></th>
-                        <th class="text-center">Brut</th>
-                        <th class="text-center">Amort./Prov.</th>
-                        <th class="text-center">Net</th>
-                        <th></th>
-                    </tr>
-                    <tr>
-                            <th>Actifs non courants</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
+                      <tr>
+                        <th>Passif</th>
+                        <th>Compte</th>
+                        <th class="text-center">{{ exercice.fin }}</th>
+                        <th>{{ exercice_avant.fin }}</th>
+                      </tr>
+                      <tr>
+                          <th></th>
+                          <th></th>
+                          <th class="text-center">Montant</th>
+                          <th></th>
+                      </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Immobilisations incorporelles</td>
-                            <td>20</td>
-                            <td>{{ immobilisation_incorporelle|intcomma }}</td>
-                            <td>{{ ammortissement_incorporelle|intcomma }}</td>
-                            <td>{{ net_immobilisation_incorporelle|intcomma }}</td>
+                            <td>Capital émis</td>
+                            <td>10</td>
+                            <td>{{ capital|intcomma }}</td>
+                    
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Immobilisations corporelles</td>
-                            <td>21</td>
-                            <td>{{ immobilisation_corporelle|intcomma }}</td>
-                            <td>{{ ammortissement_corporelle|intcomma }}</td>
-                            <td>{{ net_immobilisation_corporelle|intcomma }}</td>
+                            <td>Réserves légales</td>
+                            <td>11</td>
+                            <td>{{ reserve_legale|intcomma }}</td>
+                            
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Immobilisations biologiques</td>
-                            <td>22</td>
-                            <td>{{ immobilisation_biologique|intcomma }}</td>
-                            <td>{{ ammortissement_biologique|intcomma }}</td>
-                            <td>{{ net_immobilisation_biologique|intcomma }}</td>
+                            <td>Résultat en instance d'affectation
+                            </td>
+                            <td>12</td>
+                            <td>{{ resultat_en_instance|intcomma }}</td>
+                            
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Immobilisations en cours</td>
-                            <td>23</td>
-                            <td>{{ immobilisation_en_cours|intcomma }}</td>
-                            <td>{{ ammortissement_en_cours|intcomma }}</td>
-                            <td>{{ net_immobilisation_en_cours|intcomma }}</td>
+                            <td>Résultat net 
+                            </td>
+                            <td>12</td>
+                            <td>{{ resultat_net|intcomma }}</td>
+                          
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Immobilisations financières</td>
-                            <td>25</td>
-                            <td>{{ immobilisation_financiere|intcomma }}</td>
-                            <td>{{ prov_immobilisation_financiere|intcomma }}</td>
-                            <td>{{ net_immobilisation_financiere|intcomma }}</td>
+                            <td>Autres capitaux propres 
+                            </td>
+                            <td>11</td>
+                            <td>{{ autres_capitaux_propres|intcomma }}</td>
+                            
                             <td></td>
                         </tr>
+                       
                         <tr>
-                            <td>Impôt différés</td>
-                            <td>13</td>
-                            <td>{{ impot_differe|intcomma }}</td>
-                            <td>0</td>
-                            <td>{{ net_impot_differe|intcomma }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <th>Total actifs non courants</th>
+                            <th>Total des capitaux propres
+                            </th>
                             <th></th>
-                            <th>{{ total_actif_non_courant|intcomma }}</th>
-                            <th>{{ total_ammort_actif_non_courant|intcomma }}</th>
-                            <th>{{ total_actif_non_courant_net |intcomma }}</th>
+                            <th>{{ total_capitaux|intcomma }}</th>
                             <th></th>
                         </tr>
                     </tbody>
-                    <thead>
-                        <tr>
-                            <th>Actifs courants</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
                     <tbody>
                         <tr>
-                            <td>Stocks et en-cours</td>
-                            <td>3</td>
-                            <td>{{ stocks|intcomma }}</td>
-                            <td>{{ prov_pour_depreciation_stocks|intcomma }}</td>
-                            <td>{{ net_stocks|intcomma }}</td>
+                            <td>Impôt différés</td>
+                            <td>13</td>
+                            
+                            <td>{{ impots_differes|intcomma }}</td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td>Créances et emplois assimilés</td>
-                            <td>4</td>
-                            <td>{{ creances|intcomma }}</td>
-                            <td>0</td>
-                            <td>{{ net_creances|intcomma }}</td>
-                            <td></td>
+                            <td>Emprunts/dettes à LMT part+1an
+                            </td>
+                            <td>161</td>
+                            <td>{{ emprunts_dettes|intcomma }}</td>
                         </tr>
+                      
                         <tr>
-                            <td class="indent"><small>Clients et autres débiteurs</small></td>
-                            <td>41</td>
-                            <td>{{ clients|intcomma }}</td>
-                            <td>0</td>
-                            <td>{{ net_clients|intcomma }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td class="indent"><small>Impôts /bénéfice</small></td>
-                            <td></td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td>0</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td class="indent"><small>Autres créances et actifs assimilés</small></td>
-                            <td>4</td>
-                            <td>{{ autres_creances|intcomma }}</td>
-                            <td>0</td>
-                            <td>{{ net_autres_creances|intcomma }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>Trésorerie et équivalents de trésorerie</td>
-                            <td>5</td>
-                            <td>{{ tresorerie|intcomma }}</td>
-                            <td>0</td>
-                            <td>{{ net_tresorerie|intcomma }}</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <th>Total actifs courants</th>
+                            <th>Total passifs non-courants
+                            </th>
                             <th></th>
-                            <th>{{ total_actif_courant|intcomma }}</th>
-                            <th>{{ total_prov_actif_courant|intcomma }}</th>
-                            <th>{{ total_actif_courant_net|intcomma }}</th>
+                            <th>{{ total_passifs_non_courants|intcomma }}</th>
+                            <th></th>
+                        </tr>
+                    </tbody>
+                    <tbody>
+                      <tr>
+                          <td>Emprunts/dettes à LMT part-1an
+                          </td>
+                          <td>161</td>
+                          <td>{{ emprunts_dettes_moins_1|intcomma }}</td>
+                          <td></td>
+                      </tr>
+                      <tr>
+                        <td>Dettes court terme 
+                        </td>
+                        <td>165</td>
+                        <td>{{ dettes_court_terme|intcomma }}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Fournisseurs et comptes rattachés
+                        </td>
+                        <td>4</td>
+                        <td>{{ fournisseurs|intcomma }}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Avances reçues des clients
+                        </td>
+                        <td>4</td>
+                        <td>{{ avances_recues|intcomma }}</td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>Autres dettes
+                        </td>
+                        <td>4</td>
+                        <td>{{ autres_dettes|intcomma }}</td>
+                        <td></td>
+                      </tr>
+                    <tr>
+                      <td>Comptes de trésorerie 
+                      </td>
+                      <td>5</td>
+                      <td>{{ comptes_et_tresorerie|intcomma }}</td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                            <th>Total des capitaux propres
+                            </th>
+                            <th></th>
+                            <th>{{ total_capitaux|intcomma }}</th>
+                            <th></th>
+                    </tr>
+                    <tr>
+                            <th>Total des passifs courants
+                            </th>
+                            <th></th>
+                            <th>{{ total_passifs_courants|intcomma }}</th>
                             <th></th>
                         </tr>
                     </tbody>
@@ -279,20 +264,12 @@
                   <p class="lead"></p>
 
                   <div class="table-responsive">
-                    <h3>Total des actifs</h3>
+                    <h3>Total des capitaux propres et passifs</h3>
                     <table class="table">
                         <tr>
-                            <td>Brut</td>
-                            <td>{{ total_actif|intcomma }}</td>
+                            <th>{{ total_capitaux_propres_passifs|intcomma }}</th>
                         </tr>
-                        <tr>
-                            <td>Amort./Prov.</td>
-                            <td>{{ total_ammort_actif|intcomma }}</td>
-                        </tr>
-                        <tr>
-                            <td>Net</td>
-                            <td>{{ total_actif_net|intcomma }}</td>
-                        </tr>
+                        
                     </table>
                   </div>
                 </div>

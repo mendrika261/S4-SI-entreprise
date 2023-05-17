@@ -383,6 +383,42 @@
                 "thousands": " "
             }
     }
+        // Récupération du div à convertir en PDF
+    function generatePDF() {
+        var currentUrl = window.location.href;
+        window.open(currentUrl, '_blank');
+
+        const div = document.getElementById('myDiv');
+        const sidebar = document.getElementsByClassName('sidebar')[0];
+        const navbar = document.getElementsByClassName('navbar')[0];
+        const form=document.getElementsByTagName('form')[0];
+        // Cacher la barre latérale et la barre de navigation
+        sidebar.style.display='none';
+        navbar.style.display='none';
+        form.style.display='none';
+        // Agrandir le div et occuper tout l'écran
+        div.style.position = 'absolute';
+        div.style.top = '0';
+        div.style.left = '0';
+        div.style.width = '100vw';
+        div.style.height = '100vh';
+
+        // Imprimer la page
+        window.print();
+
+        // Remettre les styles d'origine après 1 seconde
+          sidebar.style.display='block';
+          navbar.style.display='block';
+          form.style.display='block';
+          div.style.position = '';
+          div.style.top = '';
+          div.style.left = '';
+          div.style.width = '';
+          div.style.height = '';
+
+        window.close();
+
+    }
     </script>
     {% block javascript %}
     {% endblock %}

@@ -13,8 +13,8 @@
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Plan comptable</a></li>
-              <li class="breadcrumb-item active">{{ action|capfirst }} <i class="fas fa-chart-pie"></i> </li>
+              <li class="breadcrumb-item"><a href="#">Produit</a></li>
+              <li class="breadcrumb-item active">{{ action|capfirst }}</li>
             </ol>
           </div>
         </div>
@@ -27,9 +27,15 @@
         <!-- Main row -->
         <div class="row">
             <div class="col-12">
+                {% if remove %}
+                <div class="callout callout-danger">
+                  <h5><i class="fas fa-info"></i> Attention:</h5>
+                  La suppression d'un produit entraine la suppression de toutes les données qui lui sont liées.
+                </div>
+                {% endif %}
                 <div class="card">
                   <div class="card-header">
-                      <a class="btn btn-outline-secondary" href="{% url 'list_compte_general' %}">
+                      <a class="btn btn-outline-secondary" href="{% url 'list_produit' %}">
                           Afficher la liste <i class="fas fa-list-alt"></i>
                       </a>
                   </div>
@@ -40,16 +46,31 @@
                               {% csrf_token %}
 
                               <div class="form-group">
-                                  <label for="code">Code</label>
-                                  <input type="text" id="code" class="form-control" name="code" placeholder="ex: 12345"
-                                         value="{{ code }}" {% if remove %}disabled{% endif %}
-                                         minlength="5" maxlength="5" required>
+                                  <label for="nom">Nom</label>
+                                  <input type="text" id="nom" class="form-control" name="nom" placeholder="ex: Maïs"
+                                         value="{{ nom }}" {% if remove %}disabled{% endif %}
+                                         maxlength="100" required>
                               </div>
+
                               <div class="form-group">
-                                  <label for="intitule">Intitulé</label>
-                                  <input type="text" id="intitule" class="form-control" name="intitule" placeholder="ex: Fournisseurs"
-                                         value="{{ intitule }}" {% if remove %}disabled{% endif %}
-                                         minlength="3" maxlength="100" required>
+                                  <label for="prix">Prix</label>
+                                  <input type="number" id="prix" class="form-control" name="prix" placeholder="ex: 3000"
+                                         value="{{ prix }}" {% if remove %}disabled{% endif %}
+                                         min="0" required>
+                              </div>
+
+                              <div class="form-group">
+                                  <label for="unite">Unité</label>
+                                  <input type="text" id="unite" class="form-control" name="unite" placeholder="ex: Kg"
+                                         value="{{ unite }}" {% if remove %}disabled{% endif %}
+                                         maxlength="10" required>
+                              </div>
+
+                              <div class="form-group">
+                                  <label for="stock">Quantité produit</label>
+                                  <input type="number" id="stock" class="form-control" name="stock" placeholder="ex: 100"
+                                         value="{{ stock }}" {% if remove %}disabled{% endif %}
+                                         min="0" required>
                               </div>
 
                               <div class="form-group d-flex justify-content-center">

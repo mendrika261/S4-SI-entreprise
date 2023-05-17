@@ -10,3 +10,7 @@ from .menu import Menu
 from .piece import Piece
 from .exercice import Exercice
 from .log import Log
+from .centre import Centre
+from .produit import Produit
+from .analyse import Analyse
+from .analyse_structure import AnalyseStructure

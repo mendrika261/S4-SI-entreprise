@@ -1,0 +1,395 @@
+{% extends 'base/root_nav.html' %}
+{% load humanize %}
+{% load filters %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Analyse du produit - {{ produit|title }}</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Analyse</a></li>
+              <li class="breadcrumb-item active">Produit</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="info-box mb-3">
+                                <span class="info-box-icon bg-primary elevation-1">
+                                    <i class="fas fa-boxes"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Produit</span>
+                                    <span class="info-box-number">{{ produit.stock|intcomma }} {{ produit.unite|upper }}</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="clearfix hidden-md-up"></div>
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="info-box mb-3">
+                                <span class="info-box-icon bg-success elevation-1">
+                                    <i class="fas fa-tag"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Prix de vente</span>
+                                    <span class="info-box-number">{{ produit.prix|intcomma }} / {{ produit.unite|upper }}</span>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="info-box mb-3">
+                                <span class="info-box-icon bg-warning elevation-1">
+                                    <i class="fas fa-dollar-sign"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Coût de revient</span>
+                                    <span class="info-box-number">{{ produit.prix_revient|intcomma }} / {{ produit.unite|upper }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 col-sm-6 col-md-3">
+                            <div class="info-box mb-3">
+                                <span class="info-box-icon bg-gradient-danger elevation-1">
+                                    <i class="fab fa-uncharted"></i>
+                                </span>
+                                <div class="info-box-content">
+                                    <span class="info-box-text">Seuil de rentabilité</span>
+                                    <span class="info-box-number">{{ produit.rentabilite|intcomma }} {{ produit.unite|upper }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header card-teal">
+                <h5 class="card-title">Récapitulation</h5>
+
+                <div class="card-tools">
+                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <i class="fas fa-minus"></i>
+                  </button>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <p class="text-center">
+                      <strong></strong>
+                    </p>
+
+                    <div class="chart">
+                      <canvas id="test" style="width: 100%"></canvas>
+                    </div>
+                    <!-- /.chart-responsive -->
+                  </div>
+                  <!-- /.col -->
+                  <div class="col-md-4">
+                    <p class="text-center">
+                      <strong>Cout du produit</strong>
+                    </p>
+                      <script>
+                          let pourcentage
+                          let element
+                          let cpC
+                      </script>
+                    {% for centre in centres %}
+                    <!-- /.progress-group -->
+                    <div class="progress-group">
+                      {{ centre }}
+                      <span class="float-right"><b>{% cout produit centre %}</b>/{{ produit.prix_revient }}</span>
+                      <div class="progress progress-sm">
+                        <div class="progress-bar" id="centre{{ centre.id }}"></div>
+                          <script>
+                              cpC = parseFloat(String('{% cout produit centre %}').replaceAll(/\s/g, ''))
+                              pourcentage = Number(cpC)/Number({{ produit.prix_revient }})*100
+                              element = document.getElementById('centre'+String({{ centre.id }}))
+                              element.style.width = String(pourcentage)+'%';
+                              if(pourcentage>75) element.classList.add('bg-warning')
+                              else if(pourcentage>50) element.classList.add('bg-success')
+                              else if(pourcentage>25) element.classList.add('bg-info')
+                              else element.classList.add('bg-secondary')
+                          </script>
+                      </div>
+                    </div>
+                    {% endfor %}
+                    <!-- /.progress-group -->
+                  </div>
+                  <!-- /.col -->
+                </div>
+                <!-- /.row -->
+              </div>
+              <!-- ./card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                      <table class="table table-striped table-responsive table-bordered table-head-fixed">
+                          <thead class="text-center">
+                            <tr>
+                                <th rowspan="2">Compte</th>
+                                <th rowspan="2">Total</th>
+                                {% for centre in centres %}
+                                <th colspan="3">{{ centre }}</th>
+                                {% endfor %}
+
+                                <th colspan="2">TOTAL</th>
+                            </tr>
+                            <tr>
+                                {% for centre in centres %}
+                                <th>Pourcentage</th>
+                                <th>Fixe</th>
+                                <th>Variable</th>
+                                {% endfor %}
+
+                                <th>Fixe</th>
+                                <th>Variable</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% for compte in compte_charges %}
+                            <tr>
+                                <th>{{ compte.intitule }}</th>
+                                <td>{% total_compte produit compte.code date_query %}</td>
+
+                                {% for centre in centres %}
+                                <td>{% compte_centre_pourcentage produit compte.code centre.id date_query %} %</td>
+                                <td>{% compte_centre_fixe produit compte.code centre.id date_query %}</td>
+                                <td>{% compte_centre_variable produit compte.code centre.id date_query %}</td>
+                                {% endfor %}
+
+                                <td>{% total_fixe_compte produit compte.code date_query %}</td>
+                                <td>{% total_variable_compte produit compte.code date_query %}</td>
+                            </tr>
+                            {% endfor %}
+                          </tbody>
+                          <tfoot>
+                            <tr>
+                                <th rowspan="2">TOTAL</th>
+                                <th rowspan="2">{% total produit %}</th>
+
+                                {% for centre in centres %}
+                                <th></th>
+                                <th class="text-right">{% total_centre_fixe produit centre.id %}</th>
+                                <th class="text-right">{% total_centre_variable produit centre.id %}</th>
+                                {% endfor %}
+
+                                <th rowspan="2">{% total_total_fixe produit date_query %}</th>
+                                <th rowspan="2">{% total_total_variable produit date_query %}</th>
+                            </tr>
+                            <tr class="text-right">
+                                {% for centre in centres %}
+                                <th colspan="3">{% total_centre produit centre.id %}</th>
+                                {% endfor %}
+                            </tr>
+                          </tfoot>
+                      </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Répartition sur les centres opérationnels</h1>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            {% for centre_struct in centres %}
+                {% if centre_struct.categorie == 'structure' %}
+            <div class="col-6">
+                <div class="card">
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                      <table class="table table-striped table-responsive table-bordered table-head-fixed">
+                          <thead class="text-center">
+                              <tr>
+                                  <th>Répartition
+                                      <span class="badge bg-info">
+                                          {{ centre_struct }}
+                                      </span>
+                                  </th>
+                                  <th>Cout direct</th>
+                                  <th>Clés</th>
+                                  <th>Cout indirect</th>
+                                  <th>Cout total</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                                {% for centre_oper in centres %}
+                                    {% if centre_oper.categorie != 'structure' %}
+                                    <tr>
+                                          <td>{{ centre_oper }}</td>
+                                          <td>{% total_centre produit centre_oper.id date_query %}</td>
+                                          <td>{% repartition_centre_pourcentage produit centre_oper centre_struct %}%</td>
+                                          <td>{% repartition_centre produit centre_oper centre_struct %}</td>
+                                          <td>{% repartition_centre_total produit centre_oper centre_struct %}</td>
+                                    </tr>
+                                    {% endif %}
+                                {% endfor %}
+                          </tbody>
+                          <tfoot>
+                                <tr>
+                                    <th>TOTAL GENERAL</th>
+                                    <th>{% total_general_direct produit %}</th>
+                                    <th></th>
+                                    <th>{% total_general_repartition produit centre_struct %}</th>
+                                    <th>{% total_general produit centre_struct %}</th>
+                                </tr>
+                          </tfoot>
+                      </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
+  </div>
+    <!-- /.content-wrapper -->
+    <style>
+    td {
+        text-align: right;
+    }
+    </style>
+{% endblock %}
+
+{% block javascript %}
+<link rel="stylesheet" href="{% static 'plugins/chart.js/Chart.min.css' %}">
+<script src="{% static 'plugins/chart.js/Chart.bundle.min.js' %}"></script>
+<script>
+    var quantite = []
+    let qtt = Number({{ produit.stock }})
+    for (var i = 0; i <= qtt; i+=20000) {
+        quantite.push(i);
+    }
+    var chargesFixes = [];
+    let chgFixe = parseFloat(String('{% total_total_fixe produit date_query %}').replaceAll(/\s/g, ''))
+    for (var i = 0; i <= qtt; i+=20000) {
+        chargesFixes.push(chgFixe);
+    }
+    var chargesVariables = [];
+    let chgVar = parseFloat(String('{% total_total_variable produit date_query %}').replaceAll(/\s/g, ''))
+    let temp
+    for (var i = 0; i <= qtt; i+=20000) {
+        temp = Number(i)/qtt*chgVar
+        chargesVariables.push(chgFixe+temp);
+    }
+    var prixVente = [];
+    for (var i = 0; i <= qtt; i+=20000) {
+        prixVente.push(Number({{ produit.prix }})*i);
+    }
+
+
+    var ctx = document.getElementById('test').getContext('2d');
+    var myChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: quantite,
+        datasets: [
+          {
+            label: 'Charges fixes',
+            data: chargesFixes,
+            borderColor: 'red',
+            fill: false
+          },
+          {
+            label: 'Charges variables',
+            data: chargesVariables,
+            borderColor: 'blue',
+            fill: false
+          },
+          {
+            label: 'Prix de vente',
+            data: prixVente,
+            borderColor: 'green',
+            fill: false
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+              beginAtZero: true,
+            display: true,
+            title: {
+              display: true,
+              text: 'Quantité'
+            },
+            ticks: {
+                 stepSize: 100000
+            }
+          },
+          y: {
+              beginAtZero: true,
+            display: true,
+            title: {
+              display: true,
+              text: 'Valeur'
+            },
+            ticks: {
+                 stepSize: 5000000
+            }
+          }
+        }
+      }
+    });
+
+
+</script>
+{% endblock %}
+

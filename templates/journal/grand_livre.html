@@ -100,6 +100,9 @@
                                 <a class="btn btn-info" href="{% url 'ecriture_journal' id_piece=ligne.piece.id %}">
                                     <i class="fas fa-info-circle"></i>
                                 </a>
+                                <a class="btn btn-danger" href="{% url 'ecriture_journal' id_piece=ligne.piece.id %}?supprimer=true">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
                             </td>
                         </tr>
                       {% endfor %}

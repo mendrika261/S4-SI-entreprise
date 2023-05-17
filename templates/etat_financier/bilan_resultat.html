@@ -1,0 +1,322 @@
+{% extends 'base/root_nav.html' %}
+{% load humanize %}
+
+{% block content %}
+  <!-- Content Wrapper. Contains page content -->
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Bilan</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item">Bilan</li>
+              <li class="breadcrumb-item active">Compte résultat</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <section class="content">
+      <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-10 offset-md-1">
+                        <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-3"></div>
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <label>Exercice</label>
+                                    <select class="select2bs4" style="width: 100%;" name="exercice_id">
+                                        {% for c in exercices %}
+                                            <option value="{{c.id}}" {% if c.id == exercice.id %}selected{% endif %}>{{ c }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <label></label>
+                                    <button type="submit" style="width: 100%; margin-top: 8px;"
+                                            class="btn btn-info">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+
+        <div class="row">
+          <div class="col-12">
+            <!-- Main content -->
+            <div class="invoice p-3 mb-3" id="myDiv">
+              <!-- title row -->
+              <div class="row">
+                <div class="col-12">
+                  <h4>
+                    <i class="fas fa-globe"></i> {{ societe }}
+                    <small class="float-right"></small>
+                  </h4>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- info row -->
+              <div class="row invoice-info">
+                <div class="col-sm-4 invoice-col">
+                  <div>
+                    <strong>Exercice: </strong> {{ exercice }} <br>
+                    <strong>Status: </strong>
+                    {% if exercice.cloture %}
+                        <span class="badge badge-success">Clôturé</span>
+                    {% elif exercice == exercice_actuel %}
+                        <span class="badge badge-warning">Exercice en cours</span>
+                    {% else %}
+                        <span class="badge badge-danger">Non clôturé</span>
+                    {% endif %}
+                    <br>
+                    <strong>Unite monétaire: </strong> {{ societe.devise_compte }}<br>
+                    <strong>Adresse: </strong> {{ societe.siege }}<br>
+                  </div>
+                    <button onclick="generatePDF()" class="btn btn-info">Imprimer
+                        <i class="fas fa-print"></i>
+                    </button>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+                    <strong>Status Entreprise: </strong>{{societe.status_entreprise }} <br>
+                    <strong>NIF: </strong>{{ societe.nif }}<br>
+                    <strong>STAT: </strong>{{ societe.stat }}<br>
+                    <strong>REG COMMERCE: </strong>{{ societe.reg_commerce }}<br>
+                </div>
+                <!-- /.col -->
+                <div class="col-sm-4 invoice-col">
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+                <br>
+              <!-- Table row -->
+              <div class="row">
+                <div class="col-12 table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                    <tr>
+                      <th>Resultat</th>
+                      <th>Compte</th>
+                      <th colspan="3" class="text-center">{{ exercice.fin }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Chiffre d'affaires</td>
+                            <td>70</td>
+                            <td>{{ chiffe_d_affaire|intcomma }}</td>
+                            <td></td>
+
+                        </tr>
+                        <tr>
+                            <td>Production stockée</td>
+                            <td>71</td>
+                            <td>{{ production_stockee|intcomma}}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>I.Production de l'exercice</th>
+                            <td></td>
+                            <th>{{ production_de_l_exercice|intcomma }}</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Achats consommes</td>
+                            <td>60</td>
+                            <td>{{ achat_consommes|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Services extérieurs et autres consommations</td>
+                            <td>61/62</td>
+                            <td>{{ services_exterieurs|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+
+                            <th>II. CONSOMMATION DE L`EXERCICE</th>
+                            <td></td>
+                            <th>{{ consommation_de_l_exercice|intcomma }}</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>III.VALEUR AJOUTEE D`EXPLOITATION ( I-II )</th>
+                            <td></td>
+                            <th>{{ valeur_ajoutee_d_exploitation|intcomma }}</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Charges de personnel </td>
+                            <td>64</td>
+                            <td>{{ charges_de_personnel|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Impôts, taxes et versements assimilés </td>
+                            <td>63</td>
+                            <td>{{ impots|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>IV- EXCEDENT BRUT D’EXPLOITATION </th>
+                            <td></td>
+                            <th>{{ excedent_brut|intcomma }}</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Autres produits opérationnels </td>
+                            <td>75</td>
+                            <td>{{ autres_produit|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Autres charges opérationnelles</td>
+                            <td>65</td>
+                            <td>{{ autres_charges|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Dotations aux amortissements, aux provisions et pertes de valeur</td>
+                            <td>68</td>
+                            <td>{{ dotations|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Reprise sur provisions et pertes de valeurs</td>
+                            <td>78</td>
+                            <td>{{ reprise|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>V-RESULTAT OPERATIONNEL</th>
+                            <td></td>
+                            <th>{{ resultat_operationnel|intcomma }}</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Produits financiers</td>
+                            <td>76</td>
+                            <td>{{ produits_financier|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Charges financières</td>
+                            <td>66</td>
+                            <td>{{ charges_financier|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th> VI-   RESULTAT  FINANCIER</th>
+                            <td></td>
+                            <th>{{ resultat_financier|intcomma }}</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>VII- RESULTAT AVANT IMPOTS (V + VI)</th>
+                            <td></td>
+                            <th>{{ resultat_avant_impot|intcomma }}</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Impôts exigibles sur résultats</td>
+                            <td>695</td>
+                            <td>{{ impots_exigibles|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Impôts différés (Variations)</td>
+                            <td>692</td>
+                            <td>{{ impots_differes|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                            <tr>
+                                <th>    TOTAL DES PRODUITS DES ACTIVITES ORDINAIRES</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr>
+                                <th>    TOTAL DES CHARGES DES ACTIVITES ORDINAIRES</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        <tr>
+                            <th> VIII- RESULTAT NET DES ACTIVITES ORDINAIRES</th>
+                            <td></td>
+                            <th>{{ resultat_net|intcomma }}</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Eléments extraordinaires (produits) </td>
+                            <td>77</td>
+                            <td>{{ elements_extraordinaire_produits|intcomma }}</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>Eléments extraordinaires (charges)</td>
+                            <td>67</td>
+                            <td>{{ elements_extraordinaire_charges|intcomma }}</td>
+                            <td></td>
+
+                        </tr>
+                        <tr>
+                            <th>IX-   RESULTAT  EXTRAORDINAIRE</th>
+                            <td></td>
+                            <th>{{ resultat_extraordinaire|intcomma }}</th>
+                            <td></td>
+
+                        </tr>
+                        <tr>
+                            <th> X-    RESULTAT NET DE L’EXERCICE </th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- /.col -->
+              </div>
+              <!-- /.row -->
+
+
+              <!-- /.row -->
+
+              <!-- this row will not appear when printing -->
+              <div class="row no-print">
+                <div class="col-12">
+                </div>
+              </div>
+            </div>
+            <!-- /.invoice -->
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <style>
+    .table td:not(:first-child), .table th:not(:first-child) {
+        text-align: right;
+    }
+    .table .indent {
+        text-indent: 10%;
+    }
+  </style>
+  {% endblock %}

@@ -7,16 +7,20 @@ from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models import Sum
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
-from comptable.models import Journal, CompteGeneral, Devise, Piece, EcritureJournal, CompteTiers, Exercice
+from comptable.models import Journal, CompteGeneral, Devise, Piece, EcritureJournal, CompteTiers, Exercice, Produit, \
+    Centre, Analyse, AnalyseStructure
 
 
 @login_required
-def choix_journal(request):
-    context = {
+def choix_journal(request, context=None):
+    if context is None:
+        context = {}
+    context.update({
         'liste_journal': Journal.objects.order_by('code'),
-    }
+    })
     try:
         Exercice.get_current()
     except ValidationError as e:
@@ -40,6 +44,7 @@ def add_journal(request, id_journal):
         try:
             debit_sum = 0
             credit_sum = 0
+            charges = []
             for prefixe_piece, numero_piece, compte_general, compte_tiers, intitule, debit, credit, devise, date in \
                     zip(request.POST.getlist('prefixe_piece[]'), request.POST.getlist('numero_piece[]'),
                         request.POST.getlist('compte_general[]'), request.POST.getlist('compte_tiers[]'),
@@ -69,6 +74,8 @@ def add_journal(request, id_journal):
                     devise_id=devise,
                     date=date
                 )
+                if str(ecriture.compte_general.code).startswith("6") and ecriture.debit != 0:
+                    charges.append(ecriture)
                 if ecriture is None:
                     raise ValidationError(f'L\'écriture {intitule} n\'a pas pu être créée')
                 debit_sum += ecriture.debit
@@ -77,11 +84,76 @@ def add_journal(request, id_journal):
             if debit_sum != credit_sum:
                 raise ValidationError('La somme des débits doit être égale à la somme des crédits')
 
-            context['success'] = ["L'écriture a été enregistrée dans l'exercice " + str(Exercice.get_current())]
+            if len(charges) != 0:
+                return redirect('fill_charge', piece_id=charges[0].piece.id)
+            else:
+                context['success'] = ["L'écriture a été enregistrée dans l'exercice " + str(Exercice.get_current())]
         except ValidationError as e:
             context['errors'] = e.messages
 
     return render(request, 'journal/ecriture_journal.html', context)
+
+
+@login_required
+@transaction.atomic
+def fill_charge(request, piece_id):
+    if not piece_id:
+        return redirect(reverse('choix_journal'))
+    charges = EcritureJournal.objects.filter(piece__id=piece_id, compte_general__code__startswith='6')
+    produits = Produit.objects.order_by('nom')
+    centres = Centre.objects.order_by('nom')
+    context = {
+        'produits': produits,
+        'centres': centres,
+        'charges': charges,
+        'intitule': str(charges[0].intitule).capitalize(),
+    }
+    if request.method == 'POST':
+        try:
+            index = 0
+            for quantite, variable, fixe, incorporable, non_incorporable in \
+                zip(request.POST.getlist('quantite[]'), request.POST.getlist('variable[]'), request.POST.getlist('fixe[]'),
+                    request.POST.getlist('incorporable[]'), request.POST.getlist('non_incorporable[]')):
+                for produit in produits:
+                    pourcentage_produit = request.POST.getlist(f'produit{produit.id}[]')[index]
+                    valeur_produit = float(charges[index].debit) * float(pourcentage_produit) / 100.
+                    for centre in centres:
+                        analyse = Analyse()
+                        analyse.set_quantite(quantite)
+                        analyse.set_variable(variable)
+                        analyse.set_fixe(fixe)
+                        analyse.set_incorporable(incorporable)
+                        analyse.set_non_incorporable(non_incorporable)
+                        analyse.set_pourcentage(request.POST.getlist(f'centre{centre.id}_produit{produit.id}[]')[index])
+                        analyse.set_valeur(valeur_produit * float(analyse.pourcentage) / 100)
+                        analyse.produit = produit
+                        analyse.centre = centre
+                        analyse.ecriture = charges[index]
+                        analyse.save()
+
+                    for centre_struct in centres:
+                        if str(centre_struct.categorie).lower() != 'structure':
+                            continue
+                        for centre_operation in centres:
+                            if str(centre_operation.categorie).lower() == 'structure':
+                                continue
+                            analyse = Analyse.objects.filter(ecriture__piece_id=piece_id, produit=produit, centre=centre_struct).first() or 0
+                            analyse_structure = AnalyseStructure()
+                            analyse_structure.ecriture = charges[index]
+                            analyse_structure.centre_structure = centre_struct
+                            analyse_structure.centre_operationnel = centre_operation
+                            analyse_structure.produit = produit
+                            analyse_structure.pourcentage = request.POST.getlist(f'produit{produit.id}_structure{centre_struct.id}_operation{centre_operation.id}[]')[index]
+                            analyse_structure.valeur = float(analyse_structure.pourcentage) / 100. * float(pourcentage_produit) / 100. * float(analyse.valeur)
+                            analyse_structure.save()
+                index += 1
+            context['success'] = ["L'écriture a été enregistrée avec les informations supplémentaires dans l'exercice "
+                                  + str(Exercice.get_current())]
+            request.method = 'GET'
+            return choix_journal(request, context)
+        except ValidationError as e:
+            context['errors'] = e.messages
+    return render(request, 'journal/ecriture_journal_charge.html', context)
 
 
 @login_required
@@ -95,10 +167,10 @@ def get_grand_livre(request):
     }
 
     if request.method == 'POST':
-        if request.POST['compte_general'] == '':
+        """if request.POST['compte_general'] == '':
             if request.POST['compte_tiers'] == '':
                 context['errors'] = ['Veuillez sélectionner un compte!']
-                return render(request, 'journal/grand_livre.html', context)
+                return render(request, 'journal/grand_livre.html', context)"""
 
         livre = EcritureJournal.objects.filter(
             date__year=request.POST['annee'].strip(),
@@ -164,6 +236,7 @@ def view_ecriture(request, id_piece):
             'intitule': EcritureJournal.objects.filter(piece_id=id_piece).first().intitule,
             'piece': EcritureJournal.objects.filter(piece_id=id_piece).first().piece,
             'date': EcritureJournal.objects.filter(piece_id=id_piece).first().date,
+            'supprimer': request.GET.get('supprimer'),
         }
     except Piece.DoesNotExist:
         raise Http404(f"La pièce {id_piece} n'existe pas")
@@ -185,3 +258,9 @@ def import_from_csv(request):  # TODO
             context = {'errors': e.messages}
         return render(request, 'journal/choix_journal.html', context)
     return render(request, 'journal/choix_journal.html')
+
+
+@login_required
+def remove_ecriture(request, piece_code):
+    EcritureJournal.objects.filter(piece__numero=piece_code).delete()
+    return redirect('grand_livre')

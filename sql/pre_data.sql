@@ -13,7 +13,7 @@ INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Devise
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Historique Société', 'fas fa-landmark', 'historique/', 4, 9);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Balance', 'fas fa-balance-scale', 'balance/', 3, null);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Pièce', 'fas fa-puzzle-piece', 'piece/lister', 3, 3);
-INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Exercice', 'fas fa-hourglass-half', 'self/lister', 3, 3);
+INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Exercice', 'fas fa-hourglass-half', 'exercice/lister', 3, 3);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Status d''entreprise', 'fas fa-gavel', 'status_entreprise/lister', 3, 9);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Etat financier', 'fas fa-chart-line', null, 2, null);
 INSERT INTO comptable_menu (name, icon, url, "order", parent_id) VALUES ('Actif', 'fas fa-laptop-house', 'etat_financier/actif', 1, 17);

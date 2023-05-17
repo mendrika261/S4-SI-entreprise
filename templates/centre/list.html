@@ -1,0 +1,110 @@
+{% extends 'base/root_nav.html' %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Liste des centres</h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Centre</a></li>
+              <li class="breadcrumb-item active">Tous les centres</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      <a class="btn btn-outline-success" href="{% url 'create_centre' %}">
+                          Ajouter un centre <i class="fas fa-plus"></i>
+                      </a>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                    <table id="list" class="table table-bordered table-striped">
+                      <thead>
+                          <tr>
+                              <th>Nom</th>
+                              <th>Catégorie</th>
+                              <th>Actions</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                      {% for centre in centres %}
+                          <tr>
+                            <td>{{ centre.nom }}</td>
+                            <td>{{ centre.categorie | capfirst }}</td>
+                            <td>
+                                <a class="btn btn-danger"
+                                    href="{% url 'update_centre' id_object=centre.id %}?remove">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                                <a class="btn btn-warning"
+                                   href="{% url 'update_centre' id_object=centre.id %}">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
+                                <a class="btn btn-info"
+                                    href="{% url 'analytique_centre' id_centre=centre.id %}">
+                                    <i class="fas fa-chart-line"></i>
+                                </a>
+                            </td>
+                          </tr>
+                      {% endfor %}
+                      </tbody>
+                      <tfoot>
+                          <tr>
+                              <th>Nom</th>
+                              <th>Catégorie</th>
+                              <th>Actions</th>
+                          </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+  $(function () {
+    $("#list").DataTable({
+      "language": get_datatable_lang(),
+      "columnDefs": [
+          { "targets": -1, "orderable": false, "searchable": false }
+      ],
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+    }).buttons().container().appendTo('#list_wrapper .col-md-6:eq(0)');
+  });
+</script>
+{% endblock %}
+

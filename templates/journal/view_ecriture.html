@@ -47,6 +47,9 @@
                     <strong>Pièce:</strong> {{ piece }}
                       <a href="{{ piece.fichier }}"> <i class="fas fa-download"></i> </a> <br>
                     <strong>Devise tenue de compte:</strong> {{ societe.devise_compte }}<br>
+                    {% if supprimer %}
+                      <a class="btn btn-danger" href="{% url 'remove_ecriture' piece_code=piece.numero %}">Supprimer</a>
+                    {% endif %}
                   </div>
                 </div>
                 <!-- /.col -->

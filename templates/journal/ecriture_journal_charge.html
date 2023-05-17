@@ -1,0 +1,237 @@
+{% extends 'base/root_nav.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block content %}
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Information d'analyse - <small>{{ intitule }}</small></h1>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Ecriture journal</a></li>
+              <li class="breadcrumb-item active">Charge</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Main row -->
+        <div class="row">
+            <div class="col-12">
+                <form class="card" method="post">
+                  {% csrf_token %}
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                      <table class="table table-hover table-bordered">
+                          <thead>
+                                <tr>
+                                    <th>Compte</th>
+                                    <th>Montant</th>
+                                </tr>
+                          </thead>
+                          <tbody>
+                                {% for charge in charges %}
+                                <tr data-widget="expandable-table" aria-expanded="true">
+                                    <th>{{ charge.compte_general }}</th>
+                                    <th>{{ charge.debit|intcomma }}</th>
+                                </tr>
+                                <tr class="expandable-body">
+                                    <td colspan="3">
+                                        <div class="row">
+                                            <div class="col-5 col-sm-3">
+                                                <div class="nav flex-column nav-tabs h-100" id="vert-tabs-tab" role="tablist" aria-orientation="vertical">
+                                                    <a class="nav-link active" id="vert-tabs-home-tab" data-toggle="pill" href="#vert-tabs-home" role="tab" aria-controls="vert-tabs-home" aria-selected="true">Nature</a>
+                                                    <a class="nav-link" id="vert-tabs-profile-tab" data-toggle="pill" href="#vert-tabs-profile" role="tab" aria-controls="vert-tabs-profile" aria-selected="false">Répartition sur produits</a>
+                                                    <a class="nav-link" id="vert-tabs-messages-tab" data-toggle="pill" href="#vert-tabs-messages" role="tab" aria-controls="vert-tabs-messages" aria-selected="false">Répartition sur centres</a>
+                                                    <a class="nav-link" id="vert-tabs-struct-tab" data-toggle="pill" href="#vert-tabs-struct" role="tab" aria-controls="vert-tabs-struct" aria-selected="false">Répartition des structures</a>
+                                                </div>
+                                            </div>
+                                            <div class="col-7 col-sm-9">
+                                                <div class="tab-content" id="vert-tabs-tabContent">
+                                                    <div class="tab-pane text-left fade show active" id="vert-tabs-home" role="tabpanel" aria-labelledby="vert-tabs-home-tab">
+                                                        <br>
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div class="form-group input-group mb-3">
+                                                                  <input type="number" class="form-control" placeholder="Quantité" min="0" step=".01"
+                                                                    name="quantite[]" required>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <div class="form-group input-group mb-3">
+                                                                  <input type="number" class="form-control" placeholder="Variable" min="0" max="100" step=".01"
+                                                                    name="variable[]" required>
+                                                                  <div class="input-group-append">
+                                                                    <span class="input-group-text">%</span>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="form-group input-group mb-3">
+                                                                  <input type="number" class="form-control" placeholder="Fixe" min="0" max="100" step=".01"
+                                                                    name="fixe[]" required>
+                                                                  <div class="input-group-append">
+                                                                    <span class="input-group-text">%</span>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <br>
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <div class="form-group input-group mb-3">
+                                                                  <input type="number" class="form-control" placeholder="Incorporable" min="0" max="100" step=".01"
+                                                                  name="incorporable[]" required>
+                                                                  <div class="input-group-append">
+                                                                    <span class="input-group-text">%</span>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="form-group input-group mb-3">
+                                                                  <input type="number" class="form-control" placeholder="Non incorporable" min="0" max="100" step=".01"
+                                                                  name="non_incorporable[]" required>
+                                                                  <div class="input-group-append">
+                                                                    <span class="input-group-text">%</span>
+                                                                  </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="tab-pane fade" id="vert-tabs-profile" role="tabpanel" aria-labelledby="vert-tabs-profile-tab">
+                                                        <table class="table table-bordered table-striped table-responsive">
+                                                            <thead>
+                                                                <tr>
+                                                                    {% for produit in produits %}
+                                                                    <th>{{ produit|title }}</th>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    {% for produit in produits %}
+                                                                    <td class="form-group">
+                                                                        <input type="number" class="form-control" value="0" step=".01"
+                                                                               min="0" max="100" name="produit{{ produit.id }}[]" required>
+                                                                    </td>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="tab-pane fade" id="vert-tabs-messages" role="tabpanel" aria-labelledby="vert-tabs-messages-tab">
+                                                        <table class="table table-bordered table-striped table-responsive">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Centre</th>
+                                                                    {% for produit in produits %}
+                                                                    <th>{{ produit|title }}</th>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for centre in centres %}
+                                                                <tr>
+                                                                    <th>{{ centre }}</th>
+                                                                    {% for produit in produits %}
+                                                                    <td class="form-group">
+                                                                        <input type="number" min="0" max="100" class="form-control" value="0" step=".01"
+                                                                               name="centre{{ centre.id }}_produit{{ produit.id }}[]" required>
+                                                                    </td>
+                                                                    {% endfor %}
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="tab-pane fade" id="vert-tabs-struct" role="tabpanel" aria-labelledby="vert-tabs-struct-tab">
+                                                        {% for produit in produits %}
+                                                        <h2>{{ produit|capfirst }}</h2>
+                                                        <table class="table table-bordered table-striped table-responsive">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Centre</th>
+                                                                    {% for centre_oper in centres %}
+                                                                        {% if centre_oper.categorie != 'structure' %}
+                                                                        <th>{{ centre_oper|title }}</th>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for centre_struct in centres %}
+                                                                <tr>
+                                                                    {% if centre_struct.categorie == 'structure' %}
+                                                                    <th>{{ centre_struct }}</th>
+                                                                    {% for centre_oper in centres %}
+                                                                        {% if centre_oper.categorie != 'structure' %}
+                                                                        <td class="form-group">
+                                                                            <input type="number" min="0" max="100" class="form-control" value="0" step=".01"
+                                                                                   name="produit{{ produit.id }}_structure{{ centre_struct.id }}_operation{{ centre_oper.id }}[]" required>
+                                                                        </td>
+                                                                        {% endif %}
+                                                                    {% endfor %}
+                                                                    {% endif %}
+                                                                </tr>
+                                                                {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer d-flex justify-content-end">
+                      <button class="btn btn-success">Valider <i class="fas fa-save"></i> </button>
+                  </div>
+                </form>
+            </div>
+        </div>
+        <!-- /.row (main row) -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+    <!-- /.content-wrapper -->
+{% endblock %}
+
+{% block javascript %}
+<script>
+$(function () {
+    $('#form').validate({
+        errorElement: 'span',
+        errorPlacement: function (error, element) {
+          error.addClass('invalid-feedback');
+          element.closest('.form-group').append(error);
+        },
+        highlight: function (element, errorClass, validClass) {
+          $(element).addClass('is-invalid');
+        },
+        unhighlight: function (element, errorClass, validClass) {
+          $(element).removeClass('is-invalid');
+        }
+    });
+});
+</script>
+{% endblock %}

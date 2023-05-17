@@ -81,20 +81,25 @@ class Exercice(models.Model):
         comptes = self.get_compte(compte_general_code)
         total = 0
         for compte in comptes:
-            credit = EcritureJournal.objects.filter(exercice=self, compte_general=compte).aggregate(Sum('credit'))['credit__sum']
-            debit = EcritureJournal.objects.filter(exercice=self, compte_general=compte).aggregate(Sum('debit'))['debit__sum']
+            credit = EcritureJournal.objects.filter(exercice=self, compte_general=compte).aggregate(Sum('credit'))[
+                'credit__sum']
+            debit = EcritureJournal.objects.filter(exercice=self, compte_general=compte).aggregate(Sum('debit'))[
+                'debit__sum']
             if credit is None:
                 credit = 0
             if debit is None:
                 debit = 0
-            if debit - credit >= 0 or str(compte_general_code).startswith('2') or str(compte_general_code).startswith('3'):
+            if actif and (debit - credit >= 0 or str(compte_general_code).startswith('2') or str(compte_general_code).startswith(
+                    '3')):
                 total += debit - credit
+            elif not actif and debit - credit < 0:
+                total += credit - debit
         return total
 
-    def get_total(self, *compte_general_id):
+    def get_total(self, *compte_general_id, actif=True):
         total = 0
         for compte in compte_general_id:
-            total += self.get_value(compte)
+            total += self.get_value(compte, actif)
         return total
 
     def get_actif(self):
@@ -119,7 +124,7 @@ class Exercice(models.Model):
 
             'immobilisation_financiere': self.get_value(25),
             'prov_immobilisation_financiere': abs(self.get_value(285)),
-            'net_immobilisation_financiere': self.get_value(25, 285),
+            'net_immobilisation_financiere': self.get_total(25, 285),
 
             'impot_differe': self.get_value(13),
             'net_impot_differe': self.get_value(13),
@@ -154,6 +159,68 @@ class Exercice(models.Model):
             'total_ammort_actif': abs(self.get_total(280, 281, 282, 283, 285, 39)),
             'total_actif_net': self.get_total(20, 21, 22, 23, 25, 13, 32, 35, 37, 41, 409, 467, 4457, 5, 280, 281, 282,
                                               283, 285, 39),
+        }
+
+    def get_resultat(self):
+        return {
+            'chiffe_d_affaire': self.get_value(70, actif=False),
+            'production_stockee': self.get_value(71, actif=False),
+            'production_de_l_exercice': self.get_total(70, 71, actif=False),
+            'achat_consommes': self.get_value(60),
+            'services_exterieurs': self.get_total(61, 62),
+            'consommation_de_l_exercice': self.get_total(60, 61, 62),
+            'valeur_ajoutee_d_exploitation': self.get_total(70, 71, actif=False) - self.get_total(60, 61, 62),
+            'charges_de_personnel': self.get_value(64),
+            'impots': self.get_value(63),
+            'excedent_brut': self.get_total(64, 63),
+            'autres_produit': self.get_value(75, actif=False),
+            'autres_charges': self.get_value(65),
+            'dotations': self.get_value(68),
+            'reprise': self.get_value(78, actif=False),
+            'resultat_operationnel': self.get_total(75, 78, actif=False) + self.get_total(65, 68),
+            'produits_financier': self.get_value(76, actif=False),
+            'charges_financier': self.get_value(66),
+            'resultat_financier': self.get_total(76, actif=False) + self.get_total(66),
+            'resultat_avant_impot': (self.get_total(75, 78, actif=False) + self.get_total(65, 68)) - (self.get_total(76, actif=False) + self.get_total(66)),
+            'impots_exigibles': self.get_value(695),
+            'impots_differes': self.get_value(692),
+            'resultat_net': self.get_total(695, 692),
+            'elements_extraordinaire_produits': self.get_value(77, actif=False),
+            'elements_extraordinaire_charges': self.get_value(67),
+            'resultat_extraordinaire': self.get_total(77, actif=False) + self.get_total(67)
+        }
+
+    def get_passif(self):
+        return {
+            'capital': self.get_value(10, False),
+            'reserve_legale':0,
+            'resultat_en_instance':self.get_value(0, False),
+            'resultat_net':self.get_value(12, False),
+            'autres_capitaux_propres':self.get_value(11, False),
+
+            #total des capitaux propres
+            'total_capitaux': self.get_total(10, 12, 11, actif=False),
+
+            #passifs non-courant
+            'impots_differes': self.get_value(13, False),
+            'emprunts_dettes': self.get_value(161, False),
+
+            #total
+            'total_passifs_non_courants':self.get_total(13, 161, actif=False),
+
+            #passifs courants
+            'emprunts_dettes_moins_1': 0,
+            'dettes_court_terme':self.get_value(165, False),
+            'fournisseurs':self.get_value(40, False),
+            'avances_recues':self.get_value(49, False),
+            'autres_dettes':self.get_total(42, 43, 44, actif=False),
+            'comptes_et_tresorerie':self.get_value(5, False),
+
+            #total passifs courants
+            'total_passifs_courants':self.get_total(165, 40, 49, 42, 43, 44, 5, actif=False),
+
+            #total des capitaux propres et passifs
+            'total_capitaux_propres_passifs':self.get_total(10, 12, 11, 13, 161, 165, 40, 49, 42, 43, 44, 5, actif=False)
         }
 
     def get_value_by_name(self, name):
